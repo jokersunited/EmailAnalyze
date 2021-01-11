@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edmin</title>
+        <link type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='images/icons/css/font-awesome.css') }}" rel="stylesheet">
+        <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
+            rel='stylesheet'>
+    </head>
+    <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">Phishing Email Analyser </a>
+                </div>
+            </div>
+            <!-- /navbar-inner -->
+        </div>
+        <!-- /navbar -->
+        <div class="wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="span3">
+                        <div class="sidebar">
+                            <ul class="widget widget-menu unstyled">
+                                <li><a href="/"><i class="menu-icon icon-dashboard"></i>Home</a></li>
+                                <li><a href="/email"><i class="menu-icon icon-inbox"></i>Email List</a></li>
+                                {% for nav in email_nav %}
+                                {% if loop.index == 1 %}
+                                <li class="subactive nav-sub"><a href="/email?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                {% else %}
+                                <li class="nav-sub"><a href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                            <!--/.widget-nav-->
+                            
+                            <ul class="widget widget-menu unstyled">
+                                <li><a href="/upload"><i class="menu-icon icon-upload"></i>Upload File</a></li>
+                            </ul>
+                            <!--/.widget-nav-->
+                        </div>
+                        <!--/.sidebar-->
+                    </div>
+                    <!--/.span3-->
+                     <div class="span9">
+                        <div class="content">
+                            <div class="module message">
+                                <div class="module-head">
+                                    <h3>
+                                        {{email.subject}}
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="btn-controls">
+                                <div class="btn-box-row row-fluid">
+                                    <div class="phish-score btn-box big span12">
+                                        <i class="icon-cog"></i>
+                                        <h3>95%</h3>
+                                        <p class="text-muted">Phishing Score</p>
+                                    <div class="view-email">
+                                        <a data-toggle="modal" href="#myEmailModal">view raw</a>
+                                    </div>
+                                    </div>
+                                    <!-- Modal -->
+                                                          <div class="modal fade" id="myEmailModal" role="dialog">
+                                                            <div class="modal-dialog">
+
+                                                              <!-- Modal content-->
+                                                              <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                  <h4 class="modal-title">email.subject</h4>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                {% for header, value in email.headers.items() %}
+                                                                    <p>{{header}}</p>
+                                                                    <p>{{value}}</p>
+                                                                    <br>
+                                                                {% endfor %}
+                                                                {{email.headers}}
+                                                                {{email.body}}
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                                </div>
+                                                              </div>
+
+                                                            </div>
+                                                          </div>
+                                                    <!-- EndModal -->
+                                </div>
+                            </div>
+
+                            <div class="btn-controls">
+                                <div class="btn-box-row row-fluid">
+                                    <div class="btn-box big span4"><i class=" icon-globe"></i><b>{{email.get_source()}}</b>
+                                        <p class="text-muted">
+                                            Email Source</p>
+                                        <p>click on email relays to get source</p>
+                                    </div>
+                                    <div class="btn-box big span4"><i class="icon-calendar"></i><b>{{email.get_printable_date().split(" ")[0]}}</b>
+                                        <p class="text-muted">
+                                            Date Sent</p>
+                                    </div>
+                                    <div class="btn-box big span4"><i class="icon-time"></i><b>{{email.get_printable_date().split(" ")[1]}}</b>
+                                        <p class="text-muted">
+                                            Time Sent</p>
+                                    </a>
+                                    </div>
+                                </div>
+                       </div>
+                            <div class="module">
+                                    <div class="module-body">
+                            <div class="row-fluid">
+                                    <div class="span4 sender">
+                                        <p class="sender-header">Sender</p>
+                                        <p class="sender-info">{{email.sender_email}}</p>
+                                    </div>
+                                    <div class="span4 sender">
+                                        <p class="sender-header">Recipient</p>
+                                        <p class="sender-info">{{email.receiver}}</p>
+                                    </div>
+                                    <div class="span4 sender">
+                                        <p class="sender-header">Return-Path</p>
+                                        <p class="sender-info">{{email.return_path}}</p>
+                                    </div>
+                            </div>
+                                </div>
+                            </div>
+                            <div class="module">
+                                    <div class="module-body">
+                            <div class="row-fluid">
+
+                                   <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" width="100%">
+                                       <h5>Email Spoofing</h5>
+                                       <thead>
+                                          <tr>
+											<th>Test</th>
+											<th>Result</th>
+										</tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for test in email.checks['Email Spoofing'] %}
+                                                <tr class="read">
+                                                    {% if test[0] == 'SPF' and test[1] != "" %}
+                                                <td class="cell-email" style="width: 70%">
+                                                    <b>{{test[0]}}</b> for domain ({{test[1]}})
+                                                </td>
+                                                    {% elif test[0] == 'DKIM' and test[1] != "" %}
+                                                <td class="cell-email" style="width: 70%">
+                                                    <b>{{test[0]}}</b> signed by ({{test[1]}})
+                                                </td>
+                                                    {% elif test[0] == 'DMARC' %}
+                                                <td class="cell-email" style="width: 70%">
+                                                    <b>{{test[0]}}</b>
+                                                </td>
+                                                    {% elif test[0] == 'IP BLACKLIST' %}
+                                                <td class="cell-email" style="width: 70%">
+                                                    <b>{{test[0]}}</b>
+                                                    {% if test[1]|length != 0 %}
+                                                    <p>{{test[1]}}</p>
+                                                    {% endif %}
+                                                </td>
+                                                    {% else %}
+                                                <td class="cell-email" style="width: 70%">
+                                                    <b>{{test[0]}}</b>
+                                                </td>
+                                                    {% endif %}
+                                            <td class="cell-email" style="width: 30%">
+                                                {{test[2]}}
+                                            </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row-fluid">
+                                    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" width="100%">
+                                        <h5 style="margin-top: 15px;">Body Content</h5>
+                                        <thead>
+                                           <tr>
+                                             <th>Test</th>
+                                             <th>Result</th>
+                                         </tr>
+                                             </thead>
+                                             <tbody>
+                                             {% for test in email.checks['Body Content'] %}
+                                                 <tr class="read">
+                
+                                                 <td class="cell-email" style="width: 70%">
+                                                     <b>{{test[0]}}</b>
+                                                     {% if test[1]|length != 0 %}
+                                                    <p>{{test[1]}}</p>
+                                                    {% endif %}
+                                                 </td>
+
+                                                 <td class="cell-email" style="width: 30%">
+                                                    {{test[2]}}
+                                                </td>
+                                                  
+                                                 </tr>
+                                             {% endfor %}
+                                         </tbody>
+                                     </table>
+                            </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <!--/.content-->
+                    </div>
+                    <!--/.span9-->
+                </div>
+            </div>
+            <!--/.container-->
+        </div>
+        <!--/.wrapper-->
+        <div class="footer">
+            <div class="container">
+                <b class="copyright">&copy; 2014 Edmin - EGrappler.com </b>All rights reserved.
+            </div>
+        </div>
+        <script src="{{ url_for('static', filename='scripts/jquery-1.9.1.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/jquery-ui-1.10.1.custom.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/flot/jquery.flot.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/flot/jquery.flot.resize.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/datatables/jquery.dataTables.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/common.js') }}" type="text/javascript"></script>
+
+    </body>

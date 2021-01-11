@@ -1,0 +1,15 @@
+Flask
+mail-parser
+ipwhois
+extract_msg
+whois
+pythonwhois-alt
+tldextract
+homoglyphs
+pandas
+nltk
+sklearn
+plotly
+
+matplotlib
+seaborn

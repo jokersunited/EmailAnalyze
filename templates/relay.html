@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edmin</title>
+        <link type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='images/icons/css/font-awesome.css') }}" rel="stylesheet">
+        <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
+            rel='stylesheet'>
+    </head>
+    <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">Phishing Email Analyser </a>
+                </div>
+            </div>
+            <!-- /navbar-inner -->
+        </div>
+        <!-- /navbar -->
+        <div class="wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="span3">
+                        <div class="sidebar">
+                            <ul class="widget widget-menu unstyled">
+                                <li><a href="/"><i class="menu-icon icon-dashboard"></i>Home</a></li>
+                                <li><a href="/email"><i class="menu-icon icon-inbox"></i>Email List</a></li>
+                                {% for nav in email_nav %}
+                                {% if loop.index == 1 %}
+                                <li class="nav-sub"><a href="/email?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                {% elif loop.index == 2 %}
+                                <li class="subactive nav-sub"><a href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                {% else %}
+                                <li class="nav-sub"><a href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                            <!--/.widget-nav-->
+                            
+                            <ul class="widget widget-menu unstyled">
+                                <li><a href="/upload"><i class="menu-icon icon-upload"></i>Upload File</a></li>
+                            </ul>
+                            <!--/.widget-nav-->
+                        </div>
+                        <!--/.sidebar-->
+                    </div>
+                    <!--/.span3-->
+                     <div class="span9">
+                        <div class="content">
+                            <div class="module">
+                                <div class="module-head">
+                                    <h3>
+                                        Relay Tracing
+                                    </h3>
+                                </div>
+                            <div class="module-body">
+                                    <div class="row-fluid">
+                                        <p><b>Note:</b></p>
+    <p>The final relay is displayed at the top and the source at the bottom</p>
+                                        <p>Blacklisted relays are shown in red</p>
+                                           <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" width="100%">
+                                                <thead>
+                                                  <tr>
+                                                    <th>No.</th>
+                                                    <th>Domain</th>
+                                                    <th>IP</th>
+                                                </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for relay in email.recv_ips %}
+
+                                                        <tr class="read">
+                                                            <td class="cell-email" style="width: 10%">
+                                                            {{loop.index}}
+                                                        </td>
+                                                        <td class="cell-email" style="width: 60%">
+                                                            {% if loop.index == 1 %}
+                                                            {{relay[0]}} <b>(Destination)</b>
+                                                            {% elif loop.index == email.recv_ips|length %}
+                                                            {{relay[0]}} <b>(Source)</b>
+                                                            {% elif relay[0] == "SPF CHECK" or relay[0] == "X-ORIGINATING-IP"  %}
+                                                            <b>{{relay[0]}}</b>
+                                                            {% else %}
+                                                            {{relay[0]}}
+                                                            {% endif %}
+                                                        </td>
+                                                    <td class="cell-email" style="width: 30%">
+                                                        {% if relay[1] == none %}
+                                                        -
+                                                        {% elif relay[1].public != false %}
+                                                        <!-- Modal -->
+                                                          <div class="modal fade" id="myModal{{loop.index}}" role="dialog">
+                                                            <div class="modal-dialog">
+
+                                                              <!-- Modal content-->
+                                                              <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title">{{relay[1].ip}}</h4> <a href="https://whatismyipaddress.com/ip/{{relay[1].ip}}">IP LOOKUP</a>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="ip-row">
+                                                                    <div class="modal-ip">
+                                                                        <h5>Location</h5>
+                                                                        <p>{{relay[1].country}}</p>
+                                                                    </div>
+                                                                    <div class="modal-ip">
+                                                                        <h5>Emails</h5>
+                                                                        {% for email in relay[1].emails %}
+                                                                        <p>{{email}}</p>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                    </div>
+                                                                    <div class="ip-row">
+                                                                    <div class="modal-ip">
+                                                                        <h5>Details</h5>
+                                                                        <p>{{relay[1].asn_descrip}}</p>
+                                                                        <p>{{relay[1].name}}</p>
+                                                                        <P>{{relay[1].description}}</P>
+                                                                    </div>
+                                                                    </div>
+                                                                    <div class="ip-row">
+                                                                    <div class="modal-ip">
+                                                                        <h5>Address</h5>
+                                                                        <p>{{relay[1].address}}</p>
+
+                                                                    </div>
+                                                                    </div>
+                                                                    <div class="ip-row">
+                                                                    <div class="modal-ip">
+                                                                        <h5>Date</h5>
+
+                                                                        <p>Created: {{relay[1].created}}</p>
+                                                                        <p>Updated: {{relay[1].updated}}</p>
+
+                                                                    </div>
+                                                                    </div>
+                                                                    <div class="ip-row">
+                                                                    <div class="modal-ip">
+                                                                        <h5>Reverse DNS</h5>
+
+                                                                        <p>{{relay[1].reverse}}</p>
+                                                                    </div>
+
+
+                                                                </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                                </div>
+                                                              </div>
+
+                                                            </div>
+                                                          </div>
+                                                    <!-- EndModal -->
+                                                            {% if relay[1].malicious %}
+                                                            <a data-toggle="modal" style="color: red" href="#myModal{{loop.index}}">{{relay[1].ip}}</a>
+                                                            {% else %}
+                                                            <a data-toggle="modal" href="#myModal{{loop.index}}">{{relay[1].ip}}</a>
+                                                            {% endif %}
+                                                        {% else %}
+                                                        <p class="private">{{relay[1].ip}}</p>
+                                                        {% endif %}
+                                                        </td>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        <div style="float: left">
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/.content-->
+                    </div>
+                    <!--/.span9-->
+                </div>
+            </div>
+            <!--/.container-->
+        </div>
+        <!--/.wrapper-->
+        <div class="footer">
+            <div class="container">
+                <b class="copyright">&copy; 2014 Edmin - EGrappler.com </b>All rights reserved.
+            </div>
+        </div>
+        <script src="{{ url_for('static', filename='scripts/jquery-1.9.1.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/jquery-ui-1.10.1.custom.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/flot/jquery.flot.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/flot/jquery.flot.resize.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/datatables/jquery.dataTables.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/common.js') }}" type="text/javascript"></script>
+
+    </body>

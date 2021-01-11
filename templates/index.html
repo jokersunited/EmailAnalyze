@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edmin</title>
+        <link type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='images/icons/css/font-awesome.css') }}" rel="stylesheet">
+        <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
+            rel='stylesheet'>
+    </head>
+    <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">Phishing Email Analyser </a>
+                </div>
+            </div>
+            <!-- /navbar-inner -->
+        </div>
+        <!-- /navbar -->
+        <div class="wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="span3">
+                        <div class="sidebar">
+                            <ul class="widget widget-menu unstyled">
+                                <li class="active"><a href="/"><i class="menu-icon icon-dashboard"></i>Home</a></li>
+                                <li><a href="/email"><i class="menu-icon icon-inbox"></i>Email List</a></li>
+                            </ul>
+                            <!--/.widget-nav-->
+
+                            <ul class="widget widget-menu unstyled">
+                                <li><a href="/upload"><i class="menu-icon icon-upload"></i>Upload File</a></li>
+                            </ul>
+                            <!--/.widget-nav-->
+                        </div>
+                        <!--/.sidebar-->
+                    </div>
+                    <!--/.span3-->
+                    <div class="span9">
+                        <div class="content">
+                            <!--/#btn-controls-->
+                            <div class="module">
+                                <div class="module-head">
+                                    <h3>Email Statistics</h3>
+                                </div>
+                                <div class="btn-controls">
+                                <div class="btn-box-row row-fluid">
+                                    <div class="phish-score btn-box big span12">
+                                        <i class="icon-envelope"></i>
+                                        <h3>{{phish_list|length + clean_list|length}}</h3>
+                                        <p class="text-muted">Total Emails</p>
+                                        <p>Phishing Emails: {{phish_list|length}}</p>
+                                        <p>Clean Emails: {{clean_list|length}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="module">
+                                    <div class="module-body">
+                                        {{date_graph}}
+                                    </div>
+                                    <div class="module-body">
+                                        {{type_pie}}
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/.module-->
+                        </div>
+                        <!--/.content-->
+                    </div>
+                    <!--/.span9-->
+                </div>
+            </div>
+            <!--/.container-->
+        </div>
+        <!--/.wrapper-->
+        <div class="footer">
+            <div class="container">
+                <b class="copyright">&copy; 2014 Edmin - EGrappler.com </b>All rights reserved.
+            </div>
+        </div>
+        <script src="{{ url_for('static', filename='scripts/jquery-1.9.1.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/jquery-ui-1.10.1.custom.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/flot/jquery.flot.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/flot/jquery.flot.resize.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/datatables/jquery.dataTables.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename='scripts/common.js') }}" type="text/javascript"></script>
+    </body>

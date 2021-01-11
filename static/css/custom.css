@@ -1,0 +1,135 @@
+/*
+Custom Template
+
+*/
+
+body {
+	font-size: 13px;
+	font-family: 'Open Sans', Arial, sans-serif;
+	background: #fff;
+	color: #777
+}
+
+.upload-label {
+    display: inline-block
+}
+
+.upload-submit {
+    display: inline-block;
+    float: right
+}
+
+.upload-alert p {
+    color: #ff0000;
+    font-weight: bold;
+    margin-top: 22px;
+}
+
+.cell-email, .cell-title, .cell-time, .cell-score {
+    font-weight: normal;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+.sender-info {
+    font-weight: bold;
+    text-align: center;
+    color: #444;
+    overflow-wrap: break-word;
+}
+
+.sender-header {
+    text-align: center;
+    margin: inherit;
+}
+
+.sender {
+    padding: 10px;
+}
+
+.phish-score.big h3 {
+    font-size: 48pt;
+    font-weight: bold;
+    margin: 25px;
+}
+
+.phish-score.big i {
+    font-size: 60pt;
+    margin: 10px;
+}
+
+.btn:hover, .btn-box:hover {
+	-webkit-box-shadow: unset;
+	-moz-box-shadow: unset;
+	box-shadow: unset
+}
+
+p.private {
+    color: #bbb
+}
+
+div.modal-ip {
+    display: inline-block;
+    margin: 5px;
+    width: 95%;
+    vertical-align: top;
+
+}
+
+div.modal-url {
+    display: inline-block;
+    margin: 5px;
+    width: 95%;
+    font-size: 10px;
+    vertical-align: top;
+
+}
+
+div.ip-row {
+    margin-bottom: 20px;
+}
+
+.modal-ip > p {
+    margin: 0;
+}
+
+.view-email {
+    float: right
+    margin-right: 10px;
+}
+
+li.nav-sub > a {
+    color: black;
+    border-bottom-color: #aaa;
+    border-top-color: #aaa;
+    background-color: #ddd;
+    border: 1px;
+}
+
+li.nav-sub > a:hover {
+ background-color: grey;
+}
+.widget-menu > li.subactive a {
+    border-bottom-color: #aaa;
+    border-top-color: #aaa;
+    background-color: #999;
+    color: #eee;
+}
+
+.widget-menu > li.subactive a:hover {
+    background-color: grey;
+}
+
+.widget-menu > li.subactive i {
+    color: #444;
+}
+
+td.word-wrap {
+    word-break: break-all;
+}
+
+.cell-small p {
+    font-weight: normal;
+    font-size: 10px;
+    word-break: break-all;
+}
