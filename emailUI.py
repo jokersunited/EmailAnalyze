@@ -157,68 +157,15 @@ def view_raw():
             return "Don't try and mess with the system"
     return render_template('raw.html', email=email_list[email_id], email_nav=email_nav, email_id=email_id)
 
-@webapp.route('/consolidate', methods=['GET'])
-def consolidate():
-    data = []
-    columns=['spf','dkim','dmarc','domain','iplink','homo','word_payment','word_account', 'word_postal', 'type']
-
-    goodspf = ['PASS']
-    badspf = ['FAIL', 'SOFTFAIL']
-
-    for email in email_list:
-        row = [0 for x in columns]
-        for value in email.checks.values():
-            for check in value:
-                if check[0].lower() == 'spf':
-                    if check[2] in goodspf:
-                        row[0] = 1
-                    elif check[2] in badspf:
-                        row[0] = -1
-                    else:
-                        continue
-                if check[0].lower() == 'dkim':
-                    if check[2] in goodspf:
-                        row[1] = 1
-                    elif check[2] in badspf:
-                        row[1] = -1
-                    else:
-                        continue
-                if check[0].lower() == 'dmarc':
-                    if check[2] in goodspf:
-                        row[2] = 1
-                    elif check[2] in badspf:
-                        row[2] = -1
-                    else:
-                        continue
-                if check[0].lower() == 'domain alignment':
-                    if check[2] in goodspf:
-                        row[3] = 1
-                    elif check[2] in badspf:
-                        row[3] = -1
-                    else:
-                        continue
-                if check[0].lower() == 'ip address links':
-                    if check[2] == 'NO':
-                        row[4] = 1
-                    else:
-                        row[4] = 0
-                if check[0].lower() == 'homoglyph percentage' and float(check[2][:-1]) > 0.01:
-                    row[5] = 1
-        row[6] = email.word_dict['money'][0] * (1 + email.word_dict['scare'][0] + email.word_dict['urgency'][0]) / email.word_dict['length']
-        row[7] = email.word_dict['credentials'][0] * (1 + email.word_dict['scare'][0] + email.word_dict['urgency'][0]) / email.word_dict['length']
-        row[8] = email.word_dict['postal'][0] * (1 + email.word_dict['scare'][0] + email.word_dict['urgency'][0]) / email.word_dict['length']
-        row[9] = int(request.args.get("type"))
-        data.append(row)
-    print(data)
-    consol_df = pd.DataFrame(data, columns=columns)
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-        print(consol_df)
-    consol_df.to_pickle("./" + request.args.get("name") + ".pkl")
-    return 'Success!'
+# @webapp.route('/consolidate', methods=['GET'])
+# def consolidate():
+#     for em in email_list:
+#         print(em.clean_text())
+#     return "Great!"
 
 
 if __name__ == "__main__":
-    webbrowser.open('http://127.0.0.1:5000', new = 2)
+    webbrowser.open('http://127.0.0.1:5000', new=2)
     webapp.run(debug=True)
     
 

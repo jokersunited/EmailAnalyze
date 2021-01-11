@@ -8,6 +8,7 @@ from tldextract import extract
 import pickle
 import base64
 
+from trainer.utils import convert_text
 import homoglyphs as hg
 
 import re
@@ -30,6 +31,9 @@ range3 = [ord('-'), ord('\''), ord("©")]
 #Read the list of words to be used to process and match in email body
 wordFrame = pd.read_csv("phishwords.csv", encoding="ISO-8859-1", engine='python')
 porter = PorterStemmer()
+with open("svm_model.pkl", 'rb') as f:
+    model = pickle.load(f)
+
 
 #Check if string is base64
 def isBase64(sb):
@@ -145,6 +149,8 @@ class EmailParser:
         self.subject = self.body["subject"]
         if self.subject[:8].lower() == "=?utf-8?":
             self.subject = decode_header(self.subject)[0][0].decode("utf-8")
+        elif self.subject == "":
+            self.subject = "--- NO SUBJECT ---"
 
 
         #Get email date
@@ -162,11 +168,13 @@ class EmailParser:
         self.homo_check()
         self.check_text(wordFrame)
         self.check_blacklist()
-        # self.get_df_row()
+
 
         print("=== " + self.subject + " INFO ===")
         print(self.checks)
-        print(self.clean_text())
+        result = self.check_model()
+        self.phish = int(result[0])
+        self.confidence = str(result[1][0][int(result[0])])
 
 #==========================CLASS FUNCTIONS=================================
     def get_text(self):
@@ -190,6 +198,13 @@ class EmailParser:
     #Create a string to display the checks for IP address links
     def ip_link_check(self):
         self.checks['Body Content'].append(["IP ADDRESS LINKS", "", "YES" if self.ip_links != 0 else "NO"])
+
+    def check_model(self):
+        df = convert_text([self.clean_text()], [0])
+        df_tfidf = model['vector'].transform(df['clean_words'])
+        results = model['model'].predict(df_tfidf)
+        confidence = model['model'].predict_proba(df_tfidf)
+        return results, confidence
 
 
     #Check for domain alignment between from field and source address in header
@@ -420,19 +435,17 @@ class EmailParser:
                 each_word = re.sub(cleaner_re, '', each_word)
                 clean_word = (homoglyphs.to_ascii(each_word))
 
-                if clean_word != []:
-                    if clean_word[0].isupper():
-                        clean_word = clean_word[0].lower()                
-                    else:
-                        clean_word = clean_word[-1].lower()
-                    if not '-' in clean_word:
-                        word_list.append(porter.stem(clean_word))
-                    else:
-                        clean_word = clean_word.split('-')
-                        clean_word = [porter.stem(x) for x in clean_word]
-                        word_list.extend(clean_word)
-                else:
-                    continue
+                # if clean_word != []:
+                #     if clean_word[0].isupper():
+                #         clean_word = clean_word[0].lower()
+                #     else:
+                #         clean_word = clean_word[-1].lower()
+                #     if not '-' in clean_word:
+                #         word_list.append(porter.stem(clean_word))
+                #     else:
+                #         clean_word = clean_word.split('-')
+                #         clean_word = [porter.stem(x) for x in clean_word]
+                word_list.extend(clean_word)
         
         return word_list
 

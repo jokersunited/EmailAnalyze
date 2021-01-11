@@ -4,6 +4,7 @@ from ipClass import IP
 import re
 import ssl
 import OpenSSL
+from datetime import datetime
 
 class UrlDomain:
     def __init__(self, domainstr, url):
@@ -14,6 +15,16 @@ class UrlDomain:
         self.whois = None
 
         self.domain_query()
+
+        self.date = (datetime.strptime(self.cert.get_notBefore().decode('ascii'), '%Y%m%d%H%M%SZ').strftime("%Y/%m/%d"), datetime.strptime(self.cert.get_notAfter().decode('ascii'), '%Y%m%d%H%M%SZ').strftime("%Y/%m/%d"))
+        print(self.date)
+        issuer = self.cert.get_issuer().get_components()
+        self.issuer = output = {item[0].decode(): item[1].decode() for item in issuer}
+        subject = self.cert.get_subject().get_components()
+        self.subject = output = {item[0].decode(): item[1].decode() for item in subject}
+
+        print(self.subject)
+        print(self.issuer)
 
     def domain_query(self):
         # try:
@@ -68,3 +79,5 @@ class BaseDomain(UrlDomain):
     def __init__(self, domainstr):
         super().__init__(domainstr, url=None)
         self.domain_info()
+
+# UrlDomain("singaporetech.edu.sg", "https://sit.singaporetech.edu.sg")

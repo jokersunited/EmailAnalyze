@@ -86,9 +86,9 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{email.domain_dict[basedomain][0].cert.get_issuer().get_components()}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].cert.get_subject().get_components()}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].cert.get_notBefore()}}-{{email.domain_dict[basedomain][0].cert.get_notAfter()}}</p>
+                                                            <p>{{email.domain_dict[basedomain][0].issuer['O']}}</p>
+                                                            <p>{{email.domain_dict[basedomain][0].subject['O']}}</p>
+                                                            <p>{{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
                                                             {% endif %}
 
                                                                 <!-- Modal -->
@@ -129,9 +129,9 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{email.domain_dict[basedomain][0].cert.get_issuer().get_components()}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].cert.get_subject().get_components()}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].cert.get_notBefore()}}-{{email.domain_dict[basedomain][0].cert.get_notAfter()}}</p>
+                                                            <p>{{email.domain_dict[basedomain][0].issuer['O']}}</p>
+                                                            <p>{{email.domain_dict[basedomain][0].subject['O']}}</p>
+                                                            <p>{{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
                                                             {% endif %}
                                                                 {% endif %}
                                                                
@@ -325,9 +325,9 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{obj.cert.get_issuer().get_components()}}</p>
-                                                            <p>{{obj.cert.get_subject().get_components()}}</p>
-                                                            <p>{{obj.cert.get_notBefore()}}-{{obj.cert.get_notAfter()}}</p>
+                                                            <p>{{obj.issuer['O']}}</p>
+                                                            <p>{{obj.subject['O']}}</p>
+                                                            <p>{{obj.date[0]}} - {{obj.date[1]}}</p>
                                                             {% endif %}
                                                         </td>                                                             
                                                         {% else %}
@@ -338,9 +338,9 @@
                                                             {% if obj.cert == none %}
                                                             <p>No Certificate</p>
                                                             {% else %}
-                                                            <p>{{obj.cert.get_issuer().get_components()}}</p>
-                                                            <p>{{obj.cert.get_subject().get_components()}}</p>
-                                                            <p>{{obj.cert.get_notBefore()}}-{{obj.cert.get_notAfter()}}</p>
+                                                            <p>{{obj.issuer['O']}}</p>
+                                                            <p>{{obj.subject['O']}}</p>
+                                                            <p>{{obj.date[0]}} - {{obj.date[1]}}</p>
                                                             {% endif %}
 
                                                             <ul>
