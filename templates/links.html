@@ -86,10 +86,16 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{email.domain_dict[basedomain][0].issuer['O']}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].subject['O']}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
+                                                            <p>Issuer: {{email.domain_dict[basedomain][0].issuer['CN']}}</p>
+                                                            <p>Subject: </p>
+                                                                    <ul>
+                                                                {% for key, value in email.domain_dict[basedomain][0].subject.items() %}
+                                                            <li>{{key}} - {{value}}</li>
+                                                                {% endfor %}
+                                                                        </ul>
+                                                            <p>Validity: {{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
                                                             {% endif %}
+
 
                                                                 <!-- Modal -->
                                                             <div class="modal fade" id="domainModal{{email.get_64(basedomain)}}" role="dialog"">
@@ -105,7 +111,14 @@
                                                                         <div class="ip-row">
                                                                         <div class="modal-ip">
                                                                             <h5>Registrar</h5>
-                                                                            <p>{{email.domain_dict[basedomain][0]}}</p>
+                                                                            <p>{{email.domain_dict[basedomain][0].whois['registrar'][0]}} ({{email.domain_dict[basedomain][0].whois['whois_server'][0]}})</p>
+                                                                            <br>
+                                                                            <p>Emails:</p>
+                                                                            <ul>
+                                                                                {% for email in email.domain_dict[basedomain][0].whois['emails']%}
+                                                                            <li>{{email}}</li>
+                                                                            </ul>
+
                                                                         </div>
                                                                         </div>
 
@@ -118,7 +131,7 @@
 
                                                                 </div>
                                                             </div>
-
+                                                        {% endfor %}
 
                                                             <!-- EndModal -->
 
@@ -129,12 +142,17 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{email.domain_dict[basedomain][0].issuer['O']}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].subject['O']}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
+                                                            <p>Issuer: {{email.domain_dict[basedomain][0].issuer['CN']}}</p>
+                                                            <p>Subject: </p>
+                                                                    <ul>
+                                                                {% for key, value in email.domain_dict[basedomain][0].subject.items() %}
+                                                            <li>{{key}} - {{value}}</li>
+                                                                {% endfor %}
+                                                                        </ul>
+                                                            <p>Validity: {{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
                                                             {% endif %}
                                                                 {% endif %}
-                                                               
+
                                                                 <ul>
                                                             {% if email.domain_dict[basedomain][1] == none %}
                                                             
@@ -325,9 +343,14 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{obj.issuer['O']}}</p>
-                                                            <p>{{obj.subject['O']}}</p>
-                                                            <p>{{obj.date[0]}} - {{obj.date[1]}}</p>
+                                                            <p>Issuer: {{obj.issuer['CN']}}</p>
+                                                            <p>Subject: </p>
+                                                                    <ul>
+                                                                {% for key, value in obj.subject.items() %}
+                                                            <li>{{key}} - {{value}}</li>
+                                                                {% endfor %}
+                                                                        </ul>
+                                                            <p>Validity: {{obj.date[0]}} - {{obj.date[1]}}</p>
                                                             {% endif %}
                                                         </td>                                                             
                                                         {% else %}
@@ -338,9 +361,14 @@
                                                             {% if obj.cert == none %}
                                                             <p>No Certificate</p>
                                                             {% else %}
-                                                            <p>{{obj.issuer['O']}}</p>
-                                                            <p>{{obj.subject['O']}}</p>
-                                                            <p>{{obj.date[0]}} - {{obj.date[1]}}</p>
+                                                            <p>Issuer: {{obj.issuer['CN']}}</p>
+                                                            <p>Subject: </p>
+                                                                    <ul>
+                                                                {% for key, value in obj.subject.items() %}
+                                                            <li>{{key}} - {{value}}</li>
+                                                                {% endfor %}
+                                                                        </ul>
+                                                            <p>Validity: {{obj.date[0]}} - {{obj.date[1]}}</p>
                                                             {% endif %}
 
                                                             <ul>

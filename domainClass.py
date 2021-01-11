@@ -13,18 +13,11 @@ class UrlDomain:
         self.ip = []
         self.cert = None
         self.whois = None
+        self.date = None
+        self.subject = None
+        self.issuer = None
 
         self.domain_query()
-
-        self.date = (datetime.strptime(self.cert.get_notBefore().decode('ascii'), '%Y%m%d%H%M%SZ').strftime("%Y/%m/%d"), datetime.strptime(self.cert.get_notAfter().decode('ascii'), '%Y%m%d%H%M%SZ').strftime("%Y/%m/%d"))
-        print(self.date)
-        issuer = self.cert.get_issuer().get_components()
-        self.issuer = output = {item[0].decode(): item[1].decode() for item in issuer}
-        subject = self.cert.get_subject().get_components()
-        self.subject = output = {item[0].decode(): item[1].decode() for item in subject}
-
-        print(self.subject)
-        print(self.issuer)
 
     def domain_query(self):
         # try:
@@ -57,9 +50,22 @@ class UrlDomain:
         else:
             domain = self.domain
         try:
-            self.cert = ssl.get_server_certificate((domain, 443))
+            conn = ssl.create_connection((domain, 443))
+            context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+            sock = context.wrap_socket(conn, server_hostname=domain)
+            self.cert = ssl.DER_cert_to_PEM_cert(sock.getpeercert(True))
+            # self.cert = ssl.get_server_certificate((domain, 443))
             self.cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, self.cert)
-            print(self.cert)
+            self.date = (
+            datetime.strptime(self.cert.get_notBefore().decode('ascii'), '%Y%m%d%H%M%SZ').strftime("%Y/%m/%d"),
+            datetime.strptime(self.cert.get_notAfter().decode('ascii'), '%Y%m%d%H%M%SZ').strftime("%Y/%m/%d"))
+            print(self.date)
+            issuer = self.cert.get_issuer().get_components()
+            self.issuer = output = {item[0].decode(): item[1].decode() for item in issuer}
+            subject = self.cert.get_subject().get_components()
+            self.subject = output = {item[0].decode(): item[1].decode() for item in subject}
+            print(self.issuer)
+            print(self.subject)
         except:
             self.cert = None
 
@@ -80,4 +86,4 @@ class BaseDomain(UrlDomain):
         super().__init__(domainstr, url=None)
         self.domain_info()
 
-# UrlDomain("singaporetech.edu.sg", "https://sit.singaporetech.edu.sg")
+# UrlDomain("google.com", "https://google.com")
