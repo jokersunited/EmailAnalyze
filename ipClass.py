@@ -48,9 +48,8 @@ class IP:
 
 
     def get_info(self):
-        print(self.ip)
-        print("heyya!")
-        ip_query = IPWhois(self.ip, allow_permutations=True)
+        print("Querying: " + str(self.ip))
+        ip_query = IPWhois(self.ip)
         full_result = ip_query.lookup_whois()
         results = full_result['nets']
 

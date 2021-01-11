@@ -104,7 +104,9 @@
                                     <div class="btn-box big span4"><i class=" icon-globe"></i><b>{{email.get_source()}}</b>
                                         <p class="text-muted">
                                             Email Source</p>
-                                        <p>click on email relays to get source</p>
+<!--                                        {% if email.get_source() == none %}-->
+<!--                                        <p>click on email relays to get source</p>-->
+<!--                                        {% endif %}-->
                                     </div>
                                     <div class="btn-box big span4"><i class="icon-calendar"></i><b>{{email.get_printable_date().split(" ")[0]}}</b>
                                         <p class="text-muted">

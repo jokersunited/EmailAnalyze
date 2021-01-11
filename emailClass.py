@@ -27,29 +27,9 @@ range1 = list(range(ord('a'), ord('z')))
 range2 = list(range(ord('A'), ord('Z')))
 range3 = [ord('-'), ord('\''), ord("©")]
 
-# Discontonued due to poor results from random forest classifier
-
-# with open("model.pkl", "rb") as input_file:
-#     model = pickle.load(input_file)
-
 #Read the list of words to be used to process and match in email body
 wordFrame = pd.read_csv("phishwords.csv", encoding="ISO-8859-1", engine='python')
 porter = PorterStemmer()
-
-#
-# def clean_str_new(s):
-#     porter = PorterStemmer()
-#     stop_words = set(stopwords.words('english'))
-#
-#     if (type(s) != str):
-#         s = s[0].get_payload()
-#         if (type(s) != str):
-#             s = s[0].get_payload()
-#
-#     split_str = s.split()
-#     table = str.maketrans(" " * len(string.punctuation), string.punctuation)
-#     lower_str = [porter.stem(s2.translate(table).lower()) for s2 in split_str if len(s2) < 15 and len(s2) > 2 and s2.translate(table).isalpha() and s2.translate(table).lower() not in stop_words]
-#     return lower_str
 
 #Check if string is base64
 def isBase64(sb):
@@ -182,10 +162,11 @@ class EmailParser:
         self.homo_check()
         self.check_text(wordFrame)
         self.check_blacklist()
-        self.get_df_row()
+        # self.get_df_row()
 
-
+        print("=== " + self.subject + " INFO ===")
         print(self.checks)
+        print(self.clean_text())
 
 #==========================CLASS FUNCTIONS=================================
     def get_text(self):
@@ -332,13 +313,13 @@ class EmailParser:
 
     #Look through SMTP relay IPs to determine the source country
     def get_source(self):
-        for ip_index in range(len(self.recv_ips)-1, 0, -1):
-            if self.recv_ips[ip_index][1] is None:
+        for ip_index in range(len(self.recv_ips), 0, -1):
+            if self.recv_ips[ip_index-1][1] is None:
                 continue
-            elif not self.recv_ips[ip_index][1].queried:
+            elif not self.recv_ips[ip_index-1][1].queried:
                 continue
             else:
-                return self.recv_ips[ip_index][1].country
+                return self.recv_ips[ip_index-1][1].country
 
     #Get the HTML markup version of text
     def markup_html(self):
@@ -438,8 +419,6 @@ class EmailParser:
 
                 each_word = re.sub(cleaner_re, '', each_word)
                 clean_word = (homoglyphs.to_ascii(each_word))
-
-
 
                 if clean_word != []:
                     if clean_word[0].isupper():

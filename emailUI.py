@@ -134,16 +134,16 @@ def external_link():
 def relay_trace():
     if not email:
         return redirect("/upload")
-    else:
-        try:
-            email_id = int(request.args.get("id"))
-            select_email = email_list[int(email_id)]
-            ip_list = select_email.recv_ips
-            for domain, ip in ip_list:
-                if ip is not None and not ip.queried and ip.public:
-                    ip.get_info()
-        except:
-            return "Don't try and mess with the system"
+    # else:
+    #     try:
+    email_id = int(request.args.get("id"))
+    select_email = email_list[int(email_id)]
+    ip_list = select_email.recv_ips
+    for domain, ip in ip_list:
+        if ip is not None and not ip.queried and ip.public:
+            ip.get_info()
+        # except:
+        #     return "Don't try and mess with the system"
     return render_template('relay.html', email=email_list[email_id], email_nav=email_nav, email_id=email_id)
 
 @webapp.route('/email/view_raw', methods=['GET'])
@@ -219,7 +219,7 @@ def consolidate():
 
 if __name__ == "__main__":
     webbrowser.open('http://127.0.0.1:5000', new = 2)
-    webapp.run()
+    webapp.run(debug=True)
     
 
 
