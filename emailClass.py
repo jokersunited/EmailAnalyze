@@ -482,6 +482,7 @@ class EmailParser:
             words.extend(value[1])
             word_count += value[0]
         self.checks['Body Content'].append(["FLAGGED WORDS",words, str(word_count)+"/"+str(len(word_list))])
+
     #Get a row that contains information about all the tests (Can be used by random forest classifier)
     def get_df_row(self):
         columns = ['spf', 'dkim', 'dmarc', 'domain', 'iplink', 'homo', 'word_payment', 'word_account', 'word_postal', 'blacklisted_relay']

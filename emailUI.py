@@ -85,8 +85,8 @@ def main_page():
             year = time.year
             datetime = (year, month, 1)
 
-        clean_list = [mail for mail in email_list if mail.phish == "PASS"]
-        phish_list = [mail for mail in email_list if mail.phish == "FAIL"]
+        clean_list = [mail for mail in email_list if mail.phish == 1]
+        phish_list = [mail for mail in email_list if mail.phish == 0]
         return render_template("index.html", clean_list=clean_list, phish_list=phish_list, date_graph=Markup(get_date_plot(email_list)), type_pie=Markup(get_pie(email_list)))
 
 #Email list page

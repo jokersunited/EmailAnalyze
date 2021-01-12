@@ -76,6 +76,10 @@ class UrlDomain:
         try:
             self.whois = pythonwhois.get_whois(self.domain)
             print(self.whois)
+            if "whois_server" not in self.whois:
+                self.whois['whois_server'] = "No information available"
+            if "emails" not in self.whois:
+                self.whois['emails'] = ["No emails available"]
         except Exception as e:
             print("Error occured at DomainClass: " + str(e))
 
