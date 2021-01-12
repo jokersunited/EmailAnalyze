@@ -167,9 +167,11 @@
                                                     {% elif test[0] == 'IP BLACKLIST' %}
                                                 <td class="cell-email" style="width: 70%">
                                                     <b>{{test[0]}}</b>
-                                                    {% if test[1]|length != 0 %}
-                                                    <p>{{test[1]}}</p>
-                                                    {% endif %}
+                                                    <ul>
+                                                        {% for mal in test[1] %}
+                                                        <li>{{mal[0]}}</li>
+                                                        {% endfor %}
+                                                    </ul>
                                                 </td>
                                                     {% else %}
                                                 <td class="cell-email" style="width: 70%">

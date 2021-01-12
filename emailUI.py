@@ -109,7 +109,6 @@ def email_page():
         # for domain, ip in ip_list:
         #     if ip is not None and not ip.queried and ip.public:
         #         ip.get_info()
-        print(get_date_plot(email_list))
         return render_template("email.html", email=email_list[email_id], email_nav=email_nav, email_id=email_id)
 
 @webapp.route('/email/external_links', methods=['GET'])

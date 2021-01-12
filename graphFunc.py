@@ -12,8 +12,6 @@ def get_date_plot(email_list):
     data = bad_data + good_data
     date_frame = pd.DataFrame(data, columns=["Date", "Clean", "Phish"])
 
-    print(date_frame)
-
     grouped = date_frame.groupby(pd.Grouper(key="Date", freq="MS")).sum().reset_index()
 
     fig = go.Figure()
@@ -54,7 +52,6 @@ def get_pie(email_list):
             email_share_dict["Count"][1] += 1
 
     pie_df = pd.DataFrame.from_dict(email_share_dict)
-    print(pie_df)
 
     fig = go.Figure()
 
