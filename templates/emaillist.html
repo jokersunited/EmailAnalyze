@@ -75,9 +75,16 @@
                                                     <a href="/email?id={{loop.index-1}}">{{email.get_truncated_subject()}}</a>
                                                 </td>
                                                 <td class="cell-time align-centre">
-                                                    {{ email.phish }}
+                                                    {% if email.cat != [] %}
+                                                    {% for cat in email.cat %}
+                                                    <p>{{ cat }}</p>
+                                                    {% endfor %}
+                                                    {% else %}
+                                                    <p>-</p>
+                                                    {% endif %}
                                                 </td>
                                                 <td data-sort="{{email.date}}" class="cell-time align-right">
+                                                     <span style="display:none;">{{email.get_sortable_date()}}</span>
                                                     {{ email.get_printable_date() }}
                                                 </td>
                                             </tr>

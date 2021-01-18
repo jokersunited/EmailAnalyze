@@ -5,6 +5,10 @@ import pandas as pd
 import numpy as np
 from pytz import timezone
 
+wordFrame = pd.read_csv("phishwords.csv", encoding="ISO-8859-1", engine='python')
+columns = wordFrame.columns
+print(columns)
+
 def get_date_plot(email_list):
     sg = timezone('Asia/Singapore')
     bad_data = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 0, 1] for x in email_list if x.phish == 1]
@@ -42,6 +46,30 @@ def get_date_plot(email_list):
     return plt.plot(fig, output_type="div")
     pass
 
+def get_dist(email_list):
+    email_share_dict = {"Count": [0]*len(columns)}
+    for email in email_list:
+        for cat in email.cat:
+            print(cat)
+            print(email_share_dict["Count"])
+            if cat.lower() in columns:
+                email_share_dict["Count"][columns.tolist().index(cat.lower())] += 1
+
+    dist_df = pd.DataFrame.from_dict(email_share_dict)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=columns,
+        y=dist_df['Count'],
+        )
+    )
+    fig.update_layout(
+        title="Email Types",
+        legend_title="Types"
+    )
+
+    return plt.plot(fig, output_type="div")
 
 def get_pie(email_list):
     email_share_dict = {"Count": [0, 0]}

@@ -87,7 +87,7 @@ def main_page():
 
         clean_list = [mail for mail in email_list if mail.phish == 1]
         phish_list = [mail for mail in email_list if mail.phish == 0]
-        return render_template("index.html", clean_list=clean_list, phish_list=phish_list, date_graph=Markup(get_date_plot(email_list)), type_pie=Markup(get_pie(email_list)))
+        return render_template("index.html", clean_list=clean_list, phish_list=phish_list, date_graph=Markup(get_date_plot(email_list)), type_pie=Markup(get_dist(email_list)))
 
 #Email list page
 @webapp.route('/email', methods=["GET"])
@@ -156,15 +156,7 @@ def view_raw():
             return "Don't try and mess with the system"
     return render_template('raw.html', email=email_list[email_id], email_nav=email_nav, email_id=email_id)
 
-# @webapp.route('/consolidate', methods=['GET'])
-# def consolidate():
-#     for em in email_list:
-#         print(em.clean_text())
-#     return "Great!"
-
-
 if __name__ == "__main__":
-    webbrowser.open('http://127.0.0.1:5000', new=2)
     webapp.run(debug=True)
     
 

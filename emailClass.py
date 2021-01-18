@@ -168,14 +168,14 @@ class EmailParser:
         self.homo_check()
         self.check_text(wordFrame)
         self.check_blacklist()
-        self.get_cat()
-
 
         print("=== " + self.subject + " INFO ===")
         print(self.checks)
         result = self.check_model()
         self.phish = int(result[0])
         self.confidence = str(result[1][0][int(result[0])])
+
+        self.get_cat()
 
 #==========================CLASS FUNCTIONS=================================
     def get_text(self):
@@ -237,7 +237,7 @@ class EmailParser:
         for header, value in self.headers.items():
             if header == 'Authentication-Results':
                 auths = re.findall(re_filter, value)
-            elif header == 'ARC-Authentication-Results' is not None:
+            elif header == 'ARC-Authentication-Results':
                 auths = re.findall(re_filter, value)
             else:
                 auths = []
@@ -313,6 +313,8 @@ class EmailParser:
 
     #Get a printable date to display as a string from datetime
     def get_printable_date(self):
+        return self.date.strftime('%d/%m/%Y')
+    def get_sortable_date(self):
         return self.date.strftime('%y/%m/%d %H:%M')
 
     #Truncate string length of the subject to not over display in the UI
@@ -470,70 +472,6 @@ class EmailParser:
             word_count += value[0]
         self.checks['Body Content'].append(["FLAGGED WORDS",words, str(word_count)+"/"+str(len(word_list))])
 
-    # #Get a row that contains information about all the tests (Can be used by random forest classifier)
-    # def get_df_row(self):
-    #     columns = ['spf', 'dkim', 'dmarc', 'domain', 'iplink', 'homo', 'word_payment', 'word_account', 'word_postal', 'blacklisted_relay']
-    #
-    #     goodspf = ['PASS']
-    #     badspf = ['FAIL', 'SOFTFAIL']
-    #     row = [0 for x in columns]
-    #     for value in self.checks.values():
-    #         for check in value:
-    #             if check[0].lower() == 'spf':
-    #                 if check[2] in goodspf:
-    #                     row[0] = 1
-    #                 elif check[2] in badspf:
-    #                     row[0] = -1
-    #                 else:
-    #                     continue
-    #             if check[0].lower() == 'dkim':
-    #                 if check[2] in goodspf:
-    #                     row[1] = 1
-    #                 elif check[2] in badspf:
-    #                     row[1] = -1
-    #                 else:
-    #                     continue
-    #             if check[0].lower() == 'dmarc':
-    #                 if check[2] in goodspf:
-    #                     row[2] = 1
-    #                 elif check[2] in badspf:
-    #                     row[2] = -1
-    #                 else:
-    #                     continue
-    #             if check[0].lower() == 'domain alignment':
-    #                 if check[2] in goodspf:
-    #                     row[3] = 1
-    #                 elif check[2] in badspf:
-    #                     row[3] = -1
-    #                 else:
-    #                     continue
-    #             if check[0].lower() == 'ip address links':
-    #                 if check[2] == 'NO':
-    #                     row[4] = 1
-    #                 else:
-    #                     row[4] = 0
-    #             if check[0].lower() == 'homoglyph percentage' and float(check[2][:-1]) > 0.01:
-    #                 row[5] = 1
-    #             else:
-    #                 row[5] = 0
-    #     row[6] = self.word_dict['money'][0] * (1 + self.word_dict['scare'][0] + self.word_dict['urgency'][0]) / \
-    #              self.word_dict['length']
-    #     row[7] = self.word_dict['credentials'][0] * (1 + self.word_dict['scare'][0] + self.word_dict['urgency'][0]) / \
-    #              self.word_dict['length']
-    #     row[8] = self.word_dict['postal'][0] * (1 + self.word_dict['scare'][0] + self.word_dict['urgency'][0]) / \
-    #              self.word_dict['length']
-    #     row[9] = len(self.black)
-    #     self.row_detail = row
-    #     print(self.row_detail)
-    #     print(columns)
-    #     #Contains 1 extra column due to the malicious IP relay check
-    #     pred_df = pd.DataFrame([self.row_detail], columns=columns)
-    #     # if model.predict(pred_df)[0] == 1:
-    #     #     self.phish = "FAIL"
-    #     # else:
-    #     #     self.phish = "PASS"
-    #     self.phish = "PASS"
-
     #Checks against a list for malcious IP relays
     def check_blacklist(self):
         for ip in self.recv_ips:
@@ -545,44 +483,51 @@ class EmailParser:
         print(self.black)
 
     def get_cat(self):
-        for key, value in self.word_dict.items():
-            pass
-
         goodspf = ['PASS']
         badspf = ['FAIL', 'SOFTFAIL']
         spoof_score = 0
         for value in self.checks.values():
+            print(value)
             for check in value:
                 if check[0].lower() == 'spf':
                     if check[2] in goodspf:
                         spoof_score += 1
                     elif check[2] in badspf:
-                        spoof_score += -1
+                        spoof_score += -2
                     else:
                         continue
                 if check[0].lower() == 'dkim':
                     if check[2] in goodspf:
                         spoof_score += 1
                     elif check[2] in badspf:
-                        spoof_score += -1
+                        spoof_score += -2
                     else:
                         continue
                 if check[0].lower() == 'dmarc':
                     if check[2] in goodspf:
-                        spoof_score = 1
+                        spoof_score += 1
                     elif check[2] in badspf:
-                        spoof_score = -1
+                        spoof_score += -2
                     else:
                         continue
                 if check[0].lower() == 'domain alignment':
                     if check[2] in goodspf:
-                        spoof_score = 1
+                        spoof_score += 1
                     elif check[2] in badspf:
-                        spoof_score = -1
+                        spoof_score += -1
                     else:
                         continue
-        print(spoof_score)
-        print(self.word_dict)
+        if spoof_score < 1:
+            self.cat.append("Spoofed")
+
+        if self.phish == 1:
+            self.cat.append("Phishing")
+
+        for key, value in self.word_dict.items():
+            if key == "length":
+                continue
+            if self.word_dict[key][0] > 0:
+                self.cat.append(key.capitalize())
 
     #Classify the email based on header and content
     def classify(self):
