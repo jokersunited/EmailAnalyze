@@ -164,7 +164,7 @@ class EmailParser:
         #Checks
         self.check_auth()
         self.domain_align()
-        self.ip_link_check()
+        # self.ip_link_check()
         self.homo_check()
         self.check_text(wordFrame)
         self.check_blacklist()
@@ -312,10 +312,15 @@ class EmailParser:
         return
 
     #Get a printable date to display as a string from datetime
-    def get_printable_date(self):
-        return self.date.strftime('%d/%m/%Y')
+    def get_printable_date(self, dis=None):
+        if dis is None:
+            return self.date.strftime('%d/%m/%Y')
+        else:
+            return self.date.strftime('%d/%m/%Y %H:%M')
+
     def get_sortable_date(self):
         return self.date.strftime('%y/%m/%d %H:%M')
+
 
     #Truncate string length of the subject to not over display in the UI
     def get_truncated_subject(self):

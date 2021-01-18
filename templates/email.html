@@ -108,11 +108,11 @@
 <!--                                        <p>click on email relays to get source</p>-->
 <!--                                        {% endif %}-->
                                     </div>
-                                    <div class="btn-box big span4"><i class="icon-calendar"></i><b>{{email.get_printable_date().split(" ")[0]}}</b>
+                                    <div class="btn-box big span4"><i class="icon-calendar"></i><b>{{email.get_printable_date(dis=1).split(" ")[0]}}</b>
                                         <p class="text-muted">
                                             Date Sent</p>
                                     </div>
-                                    <div class="btn-box big span4"><i class="icon-time"></i><b>{{email.get_printable_date().split(" ")[1]}}</b>
+                                    <div class="btn-box big span4"><i class="icon-time"></i><b>{{email.get_printable_date(dis=1).split(" ")[1]}}</b>
                                         <p class="text-muted">
                                             Time Sent</p>
                                     </a>

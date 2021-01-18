@@ -62,6 +62,7 @@ def get_dist(email_list):
     fig.add_trace(go.Bar(
         x=columns,
         y=dist_df['Count'],
+        marker_color=['red']*len(dist_df)
         )
     )
     fig.update_layout(
