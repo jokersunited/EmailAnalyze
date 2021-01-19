@@ -173,7 +173,7 @@ class EmailParser:
         print(self.checks)
         result = self.check_model()
         self.phish = int(result[0])
-        self.confidence = str(result[1][0][int(result[0])])
+        self.confidence = str("{:.2f}".format(result[1][0][int(result[0])]*100))
 
         self.get_cat()
 
@@ -414,14 +414,16 @@ class EmailParser:
             ascii_range= range1 + range2 + range3)
 
         if self.body.is_multipart():
-            full_body = ""
-            for part in self.body.get_payload():
-                if "text" in part.get_content_type():
-                    try:
-                        decoded = base64.b64decode(part.get_payload()).decode()
-                    except:
-                        decoded = part.get_payload()
-                    full_body += decoded
+            # full_body = ""
+            # for part in self.body.get_payload():
+            #     print(part)
+            #     if "text" in part.get_content_type():
+            #         try:
+            #             decoded = base64.b64decode(part.get_payload()).decode()
+            #         except:
+            #             decoded = part.get_payload()
+            #         full_body += decoded
+            full_body = base64.b64decode(self.body.get_payload()[0].get_payload()).decode()
         else:
             try:
                 full_body = base64.b64decode(self.body.get_payload()).decode()
@@ -526,7 +528,7 @@ class EmailParser:
             self.cat.append("Spoofed")
 
         if self.phish == 1:
-            self.cat.append("Phishing")
+            self.cat.append("Spam")
 
         for key, value in self.word_dict.items():
             if key == "length":

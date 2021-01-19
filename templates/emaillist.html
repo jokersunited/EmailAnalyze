@@ -77,7 +77,11 @@
                                                 <td class="cell-time align-centre">
                                                     {% if email.cat != [] %}
                                                     {% for cat in email.cat %}
+                                                    {% if cat == "Spam" %}
+                                                    <p>{{ cat }} ({{email.confidence}}%)</p>
+                                                    {% else %}
                                                     <p>{{ cat }}</p>
+                                                    {% endif %}
                                                     {% endfor %}
                                                     {% else %}
                                                     <p>-</p>

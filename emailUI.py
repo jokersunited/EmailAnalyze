@@ -36,17 +36,17 @@ def upload_page():
         file = request.files['emailfile']
         file_check = check_files(file.filename)
         if file_check == 1:
-            # email_list = []
-            # if file.filename.split(".")[-1] == allowed_files[2]:
-            #     msg_file = extract_msg.Message(file)
-            #     raw_file = msg_file.header.as_string() + msg_file.body
-            # elif file.split(".")[-1] in allowed_files:
-            #     raw_file = file.read().decode("utf-8")
-            # else:
-            #     return render_template("/upload.html", err="File upload failed!")
-            # email = EmailParser(raw_file)
-            # email_list.append(email)
-            # return redirect("/")
+            email_list = []
+            if file.filename.split(".")[-1] == allowed_files[2]:
+                msg_file = extract_msg.Message(file)
+                raw_file = msg_file.header.as_string() + msg_file.body
+            elif file.filename.split(".")[-1] in allowed_files:
+                raw_file = file.read().decode("utf-8")
+            else:
+                return render_template("/upload.html", err="File upload failed!")
+            email = EmailParser(raw_file)
+            email_list.append(email)
+            return redirect("/")
             return render_template("/upload.html", err="File upload failed!")
 
         elif file_check == 2:

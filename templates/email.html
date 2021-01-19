@@ -63,11 +63,8 @@
                                 <div class="btn-box-row row-fluid">
                                     <div class="phish-score btn-box big span12">
                                         <i class="icon-cog"></i>
-                                        <h3>95%</h3>
+                                        <h3>{{email.confidence}}%</h3>
                                         <p class="text-muted">Phishing Score</p>
-                                    <div class="view-email">
-                                        <a data-toggle="modal" href="#myEmailModal">view raw</a>
-                                    </div>
                                     </div>
                                     <!-- Modal -->
                                                           <div class="modal fade" id="myEmailModal" role="dialog">
@@ -101,12 +98,37 @@
 
                             <div class="btn-controls">
                                 <div class="btn-box-row row-fluid">
-                                    <div class="btn-box big span4"><i class=" icon-globe"></i><b>{{email.get_source()}}</b>
+                                    <div class="btn-box big span6">
+                                        <i class="icon-file"></i>
+                                        {% if email.phish == 1 %}
+                                        <b style="color:red">Phishing</b>
+                                        {% else %}
+                                        <b style="color:green">Benign</b>
+                                        {% endif %}
+                                        <p class="text-muted">
+                                            Text Analysis</p>
+                                    </div>
+                                    <div class="btn-box big span6">
+                                        <i class="icon-thumbs-up"></i>
+                                        <b>{{email.confidence}}%</b>
+                                        <p class="text-muted">
+                                            Confidence</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btn-controls">
+                                <div class="btn-box-row row-fluid">
+                                    <div class="btn-box big span4">
+                                        <i class=" icon-globe"></i>
+                                        {% if email.get_source() == none %}
+                                        <p>Click on relay tracing for source</p>
+                                        {% else %}
+                                        <b>{{email.get_source()}}</b>
+                                        {% endif %}
                                         <p class="text-muted">
                                             Email Source</p>
-<!--                                        {% if email.get_source() == none %}-->
-<!--                                        <p>click on email relays to get source</p>-->
-<!--                                        {% endif %}-->
+
                                     </div>
                                     <div class="btn-box big span4"><i class="icon-calendar"></i><b>{{email.get_printable_date(dis=1).split(" ")[0]}}</b>
                                         <p class="text-muted">
