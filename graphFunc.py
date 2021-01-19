@@ -7,35 +7,37 @@ from pytz import timezone
 
 wordFrame = pd.read_csv("phishwords.csv", encoding="ISO-8859-1", engine='python')
 columns = wordFrame.columns
-print(columns)
+
+tags = ["Very Unlikely", "Likely", "Neutral", "Likely", "Very Likely"]
 
 def get_date_plot(email_list):
     sg = timezone('Asia/Singapore')
-    bad_data = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 0, 1] for x in email_list if x.phish == 1]
-    good_data = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 1, 0] for x in email_list if x.phish == 0]
-    data = bad_data + good_data
-    date_frame = pd.DataFrame(data, columns=["Date", "Clean", "Phish"])
-
+    data1 = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 1, 0, 0, 0, 0] for x in email_list
+                if x.get_phishtag() == tags[0]]
+    data2 = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 0, 1, 0, 0, 0] for x in email_list
+                if x.get_phishtag() == tags[1]]
+    data3 = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 0, 0, 1, 0, 0] for x in email_list
+                if x.get_phishtag() == tags[2]]
+    data4 = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 0, 0, 0, 1, 0] for x in email_list
+                if x.get_phishtag() == tags[3]]
+    data5 = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 0, 0, 0, 0, 1] for x in email_list
+                if x.get_phishtag() == tags[4]]
+    data = data1 + data2 + data3 + data4 + data5
+    date_frame = pd.DataFrame(data, columns=["Date", "Very Unlikely", "Likely", "Neutral", "Likely", "Very Likely"])
+    print(date_frame)
     grouped = date_frame.groupby(pd.Grouper(key="Date", freq="MS")).sum().reset_index()
 
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(
-        x=grouped['Date'],
-        y=grouped['Phish'],
-        customdata=[str(x.month_name()) + " " + str(x.year) for x in grouped['Date']],
-        hovertemplate='<b>%{customdata}</b><br><i>Total Emails</i>: %{y}',
-        name="Phishing Emails",
-        line=dict(color='firebrick')
-    ))
-    fig.add_trace(go.Scatter(
-        x=grouped['Date'],
-        y=grouped['Clean'],
-        customdata=[str(x.month_name()) + " " + str(x.year) for x in grouped['Date']],
-        hovertemplate='<b>%{customdata}</b><br><i>Total Emails</i>: %{y}',
-        name="Normal Emails",
-        line=dict(color='darkblue')
-    ))
+    for x in tags:
+        fig.add_trace(go.Scatter(
+            x=grouped['Date'],
+            y=grouped[x],
+            customdata=[str(x.month_name()) + " " + str(x.year) for x in grouped['Date']],
+            hovertemplate='<b>%{customdata}</b><br><i>Total Emails</i>: %{y}',
+            name=x,
+            line=dict(color='firebrick')
+        ))
     fig.update_layout(
         title="Emails by Month",
         xaxis_title="Date",

@@ -63,7 +63,17 @@
                                 <div class="btn-box-row row-fluid">
                                     <div class="phish-score btn-box big span12">
                                         <i class="icon-cog"></i>
-                                        <h3>{{email.confidence}}%</h3>
+                                        {% if email.score == 0 %}
+                                        <h3 style="color:green">Very Unlikely</h3>
+                                        {% elif email.score < 2 %}
+                                        <h3 style="color:green;">Unlikely</h3>
+                                        {% elif email.score < 3 %}
+                                        <h3>Neutral</h3>
+                                        {% elif email.score < 6 %}
+                                        <h3 style="color:red">Likely</h3>
+                                        {% else %}
+                                        <h3 style="color:red">Very Likely</h3>
+                                        {% endif %}
                                         <p class="text-muted">Phishing Score</p>
                                     </div>
                                     <!-- Modal -->
@@ -101,9 +111,9 @@
                                     <div class="btn-box big span6">
                                         <i class="icon-file"></i>
                                         {% if email.phish == 1 %}
-                                        <b style="color:red">Phishing</b>
+                                        <b style="color:red">Positive for Phishing</b>
                                         {% else %}
-                                        <b style="color:green">Benign</b>
+                                        <b style="color:green">Negative for Phishing</b>
                                         {% endif %}
                                         <p class="text-muted">
                                             Text Analysis</p>
@@ -122,7 +132,7 @@
                                     <div class="btn-box big span4">
                                         <i class=" icon-globe"></i>
                                         {% if email.get_source() == none %}
-                                        <p style="margin-top:10px;margin-bottom:0px">Click on relay tracing for source</p>
+                                        <p style="color:black;margin-top:10px;margin-bottom:0px">Click on relay tracing for source</p>
                                         {% else %}
                                         <b>{{email.get_source()}}</b>
                                         {% endif %}

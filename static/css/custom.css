@@ -28,6 +28,7 @@ body {
 .cell-email, .cell-title, .cell-time, .cell-score {
     font-weight: normal;
     font-size: 12px;
+    word-break: normal;
 }
 
 .sender-info {
@@ -47,7 +48,7 @@ body {
 }
 
 .phish-score.big h3 {
-    font-size: 48pt;
+    font-size: 48px;
     font-weight: bold;
     margin: 25px;
 }

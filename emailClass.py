@@ -116,6 +116,7 @@ class EmailParser:
         self.phish = False
         self.black = []
         self.cat = []
+        self.score = 0
 
         #Get header and body informations
         data = emailfile
@@ -500,6 +501,7 @@ class EmailParser:
 
         if self.phish == 1:
             self.cat.append("Spam")
+            self.score += 2
 
         goodspf = ['PASS']
         badspf = ['FAIL', 'SOFTFAIL']
@@ -537,16 +539,32 @@ class EmailParser:
                         continue
         if spoof_score < 1:
             self.cat.append("Spoofed")
+            self.score += 4
+        if len(self.black) > 0:
+            self.score += 4
+            self.cat.append("Blacklisted")
+        if self.homo > 5:
+            self.score += 2
+            self.cat.append("Deception")
 
         for key, value in self.word_dict.items():
             if key == "length":
                 continue
             if self.word_dict[key][0] > 0:
                 self.cat.append(key.capitalize())
+                self.score += 1
 
-    #Classify the email based on header and content
-    def classify(self):
-        row = self.row_detail
+    def get_phishtag(self):
+        if self.score == 0:
+            return "Very Unlikely"
+        elif self.score < 2:
+            return "Likely"
+        elif self.score < 3:
+            return "Netural"
+        elif self.score < 6:
+            return "Likely"
+        else:
+            return "Very Likely"
 
     #Get a truncated base64 encoded string (used to create HTML modal IDs)
     def get_64(self, s):
@@ -554,4 +572,5 @@ class EmailParser:
 
     def get_month(self):
         pass
+
 
