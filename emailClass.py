@@ -180,6 +180,7 @@ class EmailParser:
 #==========================CLASS FUNCTIONS=================================
     def get_text(self):
         if self.body.is_multipart():
+            print("Is Multipart")
             full_body = ""
             for part in self.body.get_payload():
                 if "text" in part.get_content_type():
@@ -189,6 +190,7 @@ class EmailParser:
                         decoded = part.get_payload()
                     full_body += decoded
         else:
+            print("Not Multipart")
             try:
                 full_body = base64.b64decode(self.body.get_payload()).decode()
             except:
@@ -414,22 +416,27 @@ class EmailParser:
             ascii_range= range1 + range2 + range3)
 
         if self.body.is_multipart():
-            # full_body = ""
-            # for part in self.body.get_payload():
-            #     print(part)
-            #     if "text" in part.get_content_type():
-            #         try:
-            #             decoded = base64.b64decode(part.get_payload()).decode()
-            #         except:
-            #             decoded = part.get_payload()
-            #         full_body += decoded
-            full_body = base64.b64decode(self.body.get_payload()[0].get_payload()).decode()
+            full_body = ""
+            for part in self.body.get_payload():
+                print(part)
+                if "text" in part.get_content_type():
+                    try:
+                        decoded = base64.b64decode(part.get_payload()).decode()
+                    except:
+                        decoded = part.get_payload()
+                    full_body = decoded
+                    break
+            # try:
+            #     full_body = base64.b64decode(self.body.get_payload()[0].get_payload()).decode()
+            # except:
+            #     full_body = self.body.get_payload()[0].get_payload()
         else:
             try:
                 full_body = base64.b64decode(self.body.get_payload()).decode()
             except:
                 full_body = self.body.get_payload()
-
+        print(self.subject)
+        print(full_body)
         body_text = re.sub(html_re, ' ', full_body)
         body_text = re.sub(cleaner_re, ' ', body_text)
         
@@ -490,6 +497,10 @@ class EmailParser:
         print(self.black)
 
     def get_cat(self):
+
+        if self.phish == 1:
+            self.cat.append("Spam")
+
         goodspf = ['PASS']
         badspf = ['FAIL', 'SOFTFAIL']
         spoof_score = 0
@@ -526,9 +537,6 @@ class EmailParser:
                         continue
         if spoof_score < 1:
             self.cat.append("Spoofed")
-
-        if self.phish == 1:
-            self.cat.append("Spam")
 
         for key, value in self.word_dict.items():
             if key == "length":
