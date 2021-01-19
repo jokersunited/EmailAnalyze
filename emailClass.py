@@ -181,7 +181,6 @@ class EmailParser:
 #==========================CLASS FUNCTIONS=================================
     def get_text(self):
         if self.body.is_multipart():
-            print("Is Multipart")
             full_body = ""
             for part in self.body.get_payload():
                 if "text" in part.get_content_type():
@@ -191,7 +190,6 @@ class EmailParser:
                         decoded = part.get_payload()
                     full_body += decoded
         else:
-            print("Not Multipart")
             try:
                 full_body = base64.b64decode(self.body.get_payload()).decode()
             except:
@@ -291,7 +289,6 @@ class EmailParser:
                 self.recv_ips.append([domain, ip_obj])
             if header == "Received-SPF":
                 split_spf = value.split(" ")
-                print(split_spf)
                 for item in split_spf:
                     if "client-ip" in item:
                         ip_addr = replace_chars(item.split("=")[1])
@@ -401,7 +398,6 @@ class EmailParser:
             except Exception as e:
                 print("Error occured at unique url Ips: " + str(e))
         self.domain_dict = domain_dict
-        print(self.domain_dict)
 
     #Clean text in body, convert homoglyphs, stem words to prepare for list comparison
     def clean_text(self):
@@ -419,7 +415,6 @@ class EmailParser:
         if self.body.is_multipart():
             full_body = ""
             for part in self.body.get_payload():
-                print(part)
                 if "text" in part.get_content_type():
                     try:
                         decoded = base64.b64decode(part.get_payload()).decode()
@@ -436,8 +431,6 @@ class EmailParser:
                 full_body = base64.b64decode(self.body.get_payload()).decode()
             except:
                 full_body = self.body.get_payload()
-        print(self.subject)
-        print(full_body)
         body_text = re.sub(html_re, ' ', full_body)
         body_text = re.sub(cleaner_re, ' ', body_text)
         
@@ -454,7 +447,7 @@ class EmailParser:
                 each_word = re.sub(cleaner_re, '', each_word)
                 clean_word = (homoglyphs.to_ascii(each_word))
                 word_list.extend(clean_word)
-        
+        print(word_list)
         return word_list
 
     #Creates a count & percentage count of words on the cleaned body using a wordlist in csv (First row as category)
@@ -469,9 +462,9 @@ class EmailParser:
                         continue
                     else:
                         bad_word = porter.stem(long_bad_word)
-                        if word == bad_word:
+                        if porter.stem(word.lower()) == bad_word:
                             word_dict[column][0] += 1
-                            if bad_word in word_dict[column][1]:
+                            if long_bad_word in word_dict[column][1]:
                                 continue
                             else:
                                 word_dict[column][1].append(long_bad_word)
@@ -495,19 +488,17 @@ class EmailParser:
             elif ip[1].malicious:
                 self.black.append(ip)
         self.checks['Email Spoofing'].append(["IP BLACKLIST", self.black, str(len(self.black))])
-        print(self.black)
 
+    #Checks for categories that the email fits into by checking the tests and the content for flagged words
     def get_cat(self):
-
         if self.phish == 1:
-            self.cat.append("Spam")
+            self.cat.append("Phish")
             self.score += 2
 
         goodspf = ['PASS']
         badspf = ['FAIL', 'SOFTFAIL']
         spoof_score = 0
         for value in self.checks.values():
-            print(value)
             for check in value:
                 if check[0].lower() == 'spf':
                     if check[2] in goodspf:
@@ -543,7 +534,7 @@ class EmailParser:
         if len(self.black) > 0:
             self.score += 4
             self.cat.append("Blacklisted")
-        if self.homo > 5:
+        if self.homo > 0.05:
             self.score += 2
             self.cat.append("Deception")
 
@@ -554,17 +545,34 @@ class EmailParser:
                 self.cat.append(key.capitalize())
                 self.score += 1
 
+    #Get the overall tag for whether the email is phishing or not
     def get_phishtag(self):
         if self.score == 0:
             return "Very Unlikely"
         elif self.score < 2:
-            return "Likely"
-        elif self.score < 3:
-            return "Netural"
+            return "Unlikely"
+        elif self.score < 4:
+            return "Neutral"
         elif self.score < 6:
             return "Likely"
         else:
             return "Very Likely"
+
+    #get the summary of all results and categories for a particular email
+    def get_resulttag(self):
+        result_str = "["
+        if self.phish == 1:
+            add_str = "Phish (" + self.confidence + "%)"
+            result_str += add_str
+        for cat in self.cat:
+            if self.phish == 0 and self.cat.index(cat) == 0:
+                result_str += cat
+            elif cat == "Phish":
+                continue
+            else:
+                result_str = result_str + ", " + cat
+        result_str += "]"
+        return result_str
 
     #Get a truncated base64 encoded string (used to create HTML modal IDs)
     def get_64(self, s):

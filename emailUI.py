@@ -86,9 +86,12 @@ def main_page():
             year = time.year
             datetime = (year, month, 1)
 
-        phish_list = [mail for mail in email_list if mail.phish == 1]
-        clean_list = [mail for mail in email_list if mail.phish == 0]
-        return render_template("index.html", clean_list=clean_list, phish_list=phish_list, date_graph=Markup(get_date_plot(email_list)), type_pie=Markup(get_dist(email_list)))
+        ordered_list = ["Very Likely", "Likely", "Neutral", "Unlikely", "Very Unlikely"]
+        tag_list = [mail.get_phishtag() for mail in email_list]
+        tag_dict = {tag: tag_list.count(tag) for tag in tag_list}
+        tag_values = sorted(tag_dict.items(), key=lambda pair: ordered_list.index(pair[0]))
+
+        return render_template("index.html", tag_dict=tag_values, total_emails=len(email_list), date_graph=Markup(get_date_plot(email_list)), type_pie=Markup(get_dist(email_list)))
 
 #Email list page
 @webapp.route('/email', methods=["GET"])

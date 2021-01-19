@@ -7,9 +7,11 @@ from pytz import timezone
 
 wordFrame = pd.read_csv("phishwords.csv", encoding="ISO-8859-1", engine='python')
 columns = wordFrame.columns
+columns = columns.union(["deception"])
 
-tags = ["Very Unlikely", "Likely", "Neutral", "Likely", "Very Likely"]
+tags = ["Very Unlikely", "Unlikely", "Neutral", "Likely", "Very Likely"]
 
+#Plot the likeliness of phishing emails by months
 def get_date_plot(email_list):
     sg = timezone('Asia/Singapore')
     data1 = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 1, 0, 0, 0, 0] for x in email_list
@@ -23,8 +25,7 @@ def get_date_plot(email_list):
     data5 = [[pd.Timestamp(x.date).to_period('D').to_timestamp().tz_localize(sg), 0, 0, 0, 0, 1] for x in email_list
                 if x.get_phishtag() == tags[4]]
     data = data1 + data2 + data3 + data4 + data5
-    date_frame = pd.DataFrame(data, columns=["Date", "Very Unlikely", "Likely", "Neutral", "Likely", "Very Likely"])
-    print(date_frame)
+    date_frame = pd.DataFrame(data, columns=["Date", "Very Unlikely", "Unlikely", "Neutral", "Likely", "Very Likely"])
     grouped = date_frame.groupby(pd.Grouper(key="Date", freq="MS")).sum().reset_index()
 
     fig = go.Figure()
@@ -36,7 +37,7 @@ def get_date_plot(email_list):
             customdata=[str(x.month_name()) + " " + str(x.year) for x in grouped['Date']],
             hovertemplate='<b>%{customdata}</b><br><i>Total Emails</i>: %{y}',
             name=x,
-            line=dict(color='firebrick')
+            # line=dict(color='firebrick')
         ))
     fig.update_layout(
         title="Emails by Month",
@@ -48,12 +49,11 @@ def get_date_plot(email_list):
     return plt.plot(fig, output_type="div")
     pass
 
+#Get a distribution bar chart of all the different categories of emails
 def get_dist(email_list):
     email_share_dict = {"Count": [0]*len(columns)}
     for email in email_list:
         for cat in email.cat:
-            print(cat)
-            print(email_share_dict["Count"])
             if cat.lower() in columns:
                 email_share_dict["Count"][columns.tolist().index(cat.lower())] += 1
 
@@ -63,8 +63,7 @@ def get_dist(email_list):
 
     fig.add_trace(go.Bar(
         x=columns,
-        y=dist_df['Count'],
-        marker_color=['red']*len(dist_df)
+        y=dist_df['Count']
         )
     )
     fig.update_layout(
@@ -74,6 +73,7 @@ def get_dist(email_list):
 
     return plt.plot(fig, output_type="div")
 
+#Get a pie chart (Discontinued)
 def get_pie(email_list):
     email_share_dict = {"Count": [0, 0]}
     for email in email_list:

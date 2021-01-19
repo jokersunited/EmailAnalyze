@@ -64,17 +64,17 @@
                                     <div class="phish-score btn-box big span12">
                                         <i class="icon-cog"></i>
                                         {% if email.score == 0 %}
-                                        <h3 style="color:green">Very Unlikely</h3>
+                                        <h3>Very Unlikely</h3>
                                         {% elif email.score < 2 %}
-                                        <h3 style="color:green;">Unlikely</h3>
-                                        {% elif email.score < 3 %}
+                                        <h3>Unlikely</h3>
+                                        {% elif email.score < 4 %}
                                         <h3>Neutral</h3>
                                         {% elif email.score < 6 %}
                                         <h3 style="color:red">Likely</h3>
                                         {% else %}
                                         <h3 style="color:red">Very Likely</h3>
                                         {% endif %}
-                                        <p class="text-muted">Phishing Score</p>
+                                        <p class="text-muted">Overall Phishing Score</p>
                                     </div>
                                     <!-- Modal -->
                                                           <div class="modal fade" id="myEmailModal" role="dialog">

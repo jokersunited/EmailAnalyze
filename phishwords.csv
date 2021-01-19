@@ -5,14 +5,14 @@ invoice,user,important,hold,shipment
 transfer,pass,immediately,malware,order
 wire,login,now,porn,parcel
 pay,credential,update,hack,ticket
-paid,login,verify,loss,package
-refund,log,,recover,shipping
-address,account,,pending,tracking
+paid,log,verify,loss,package
+refund,account,,recover,shipping
+address,,,pending,tracking
 statement,,,embarassed,
 money,,,affected,
 price,,,fuck,
 bill,,,lost,
-e-bill,,,,
+e-bill,,,die,
 finance,,,,
 financial,,,,
 statement,,,,
@@ -22,3 +22,7 @@ billion,,,,
 million,,,,
 thousand,,,,
 payment,,,,
+fund,,,,
+consultant,,,,
+lucrative,,,,
+transact,,,,

@@ -75,17 +75,15 @@
                                                     <a href="/email?id={{loop.index-1}}">{{email.get_truncated_subject()}}</a>
                                                 </td>
                                                 <td class="cell-time align-centre">
+                                                    {% if email.score >= 4%}
+                                                    <b style="color:red;">{{ email.get_phishtag() }}</b>
+                                                    {% else %}
+                                                    <b>{{ email.get_phishtag() }}</b>
+                                                    {% endif %}
                                                     {% if email.cat != [] %}
-                                                    {% for cat in email.cat %}
-                                                    {% if cat == "Spam" %}
-                                                    <p>{{ cat }} ({{email.confidence}}%)</p>
-                                                    {% else %}
-                                                    <p>{{ cat }}</p>
+                                                    <br>{{email.get_resulttag()}}
                                                     {% endif %}
-                                                    {% endfor %}
-                                                    {% else %}
-                                                    <p>-</p>
-                                                    {% endif %}
+
                                                 </td>
                                                 <td data-sort="{{email.date}}" class="cell-time align-right">
                                                      <span style="display:none;">{{email.get_sortable_date()}}</span>
