@@ -37,7 +37,6 @@ def get_date_plot(email_list):
             customdata=[str(x.month_name()) + " " + str(x.year) for x in grouped['Date']],
             hovertemplate='<b>%{customdata}</b><br><i>Total Emails</i>: %{y}',
             name=x,
-            # line=dict(color='firebrick')
         ))
     fig.update_layout(
         title="Emails by Month",
@@ -63,12 +62,14 @@ def get_dist(email_list):
 
     fig.add_trace(go.Bar(
         x=columns,
-        y=dist_df['Count']
+        y=dist_df['Count'],
+        marker=dict(color=plx.colors.sequential.Plasma)
         )
     )
     fig.update_layout(
         title="Email Types",
-        legend_title="Types"
+        legend_title="Types",
+        xaxis={'categoryorder': 'total descending'}
     )
 
     return plt.plot(fig, output_type="div")

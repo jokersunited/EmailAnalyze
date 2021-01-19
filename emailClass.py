@@ -447,7 +447,6 @@ class EmailParser:
                 each_word = re.sub(cleaner_re, '', each_word)
                 clean_word = (homoglyphs.to_ascii(each_word))
                 word_list.extend(clean_word)
-        print(word_list)
         return word_list
 
     #Creates a count & percentage count of words on the cleaned body using a wordlist in csv (First row as category)
@@ -551,9 +550,9 @@ class EmailParser:
             return "Very Unlikely"
         elif self.score < 2:
             return "Unlikely"
-        elif self.score < 4:
+        elif self.score < 3:
             return "Neutral"
-        elif self.score < 6:
+        elif self.score < 5:
             return "Likely"
         else:
             return "Very Likely"

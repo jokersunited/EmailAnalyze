@@ -60,7 +60,7 @@
                                         <thead>
                                           <tr>
 											<th>Email</th>
-											<th>Subject</th>
+											<th>Subject</th>FOverall
 											<th>Result</th>
 											<th>Date (D/M/Y)</th>
 										</tr>
@@ -75,7 +75,7 @@
                                                     <a href="/email?id={{loop.index-1}}">{{email.get_truncated_subject()}}</a>
                                                 </td>
                                                 <td class="cell-time align-centre">
-                                                    {% if email.score >= 4%}
+                                                    {% if email.score >= 3%}
                                                     <b style="color:red;">{{ email.get_phishtag() }}</b>
                                                     {% else %}
                                                     <b>{{ email.get_phishtag() }}</b>
