@@ -16,6 +16,7 @@ import base64
 import matplotlib.pyplot as plt
 
 download("wordnet")
+download("average_perceptron_tagger")
 
 tag_map = defaultdict(lambda: wn.NOUN)
 
