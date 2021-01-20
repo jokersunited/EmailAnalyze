@@ -3,10 +3,12 @@ from emailClass import *
 import zipfile
 import extract_msg
 from graphFunc import *
-from flask import Markup
+
+from time import sleep
 
 #flask initialization
 webapp = Flask(__name__)
+webapp.config['SECRET_KEY'] = 'CSA BOLEH'
 
 #Global variables to be used
 allowed_files = ["txt", "eml", "msg"]
@@ -37,7 +39,7 @@ def upload_page():
         file_check = check_files(file.filename)
         if file_check == 1:
             email_list = []
-            loading_status = "Processing " + file.filename
+            loading_status = file.filename
             if file.filename.split(".")[-1] == allowed_files[2]:
                 msg_file = extract_msg.Message(file)
                 raw_file = msg_file.header.as_string() + msg_file.body
@@ -53,7 +55,7 @@ def upload_page():
             zip_file = zipfile.ZipFile(file)
             files = zip_file.namelist()
             for file in files:
-                loading_status = "Processing " + file
+                loading_status = file
                 try:
                     if file.split(".")[-1] == allowed_files[2]:
                         msg_file = extract_msg.Message(zip_file.open(file))
@@ -152,12 +154,8 @@ def view_raw():
             redirect("/")
     return render_template('raw.html', email=email_list[email_id], email_nav=email_nav, email_id=email_id)
 
-@webapp.route('/loader')
-def check_load():
-    return jsonify(load=loading_status)
-
 if __name__ == "__main__":
-    webapp.run(debug=True)
+    webapp.run(webapp, debug=True)
     
 
 

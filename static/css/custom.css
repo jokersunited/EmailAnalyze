@@ -188,3 +188,12 @@ td.word-wrap {
     width: 100%;
     background: white;
 }
+
+#loaderback > h2{
+    position: fixed;
+    top: 61%;
+    left: 50%;
+    margin: auto;
+    transform: translate(-50%, -50%);
+    font-size: large;
+}
