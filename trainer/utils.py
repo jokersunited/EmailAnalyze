@@ -3,7 +3,7 @@ from nltk.corpus import wordnet as wn
 
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-from nltk import pos_tag
+from nltk import pos_tag, download
 from nltk.corpus import stopwords
 
 from sklearn.metrics import plot_confusion_matrix
@@ -14,6 +14,8 @@ import io
 import base64
 
 import matplotlib.pyplot as plt
+
+download("wordnet")
 
 tag_map = defaultdict(lambda: wn.NOUN)
 
