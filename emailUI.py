@@ -1,9 +1,7 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 from emailClass import *
 import zipfile
 import extract_msg
-import webbrowser
-import pandas as pd
 from graphFunc import *
 from flask import Markup
 
@@ -15,6 +13,7 @@ allowed_files = ["txt", "eml", "msg"]
 email = None
 email_list = []
 email_nav = ["Overview", "Relay Tracing", "External Links", "View Raw"]
+loading_status = ""
 
 #Check filenames to determine if single file, multiple file or invalid format
 def check_files(filename):
@@ -31,12 +30,14 @@ def check_files(filename):
 def upload_page():
     global email
     global email_list
+    global loading_status
 
     if request.method == "POST":
         file = request.files['emailfile']
         file_check = check_files(file.filename)
         if file_check == 1:
             email_list = []
+            loading_status = "Processing " + file.filename
             if file.filename.split(".")[-1] == allowed_files[2]:
                 msg_file = extract_msg.Message(file)
                 raw_file = msg_file.header.as_string() + msg_file.body
@@ -47,13 +48,12 @@ def upload_page():
             email = EmailParser(raw_file)
             email_list.append(email)
             return redirect("/")
-            return render_template("/upload.html", err="File upload failed!")
-
         elif file_check == 2:
             email_list = []
             zip_file = zipfile.ZipFile(file)
             files = zip_file.namelist()
             for file in files:
+                loading_status = "Processing " + file
                 try:
                     if file.split(".")[-1] == allowed_files[2]:
                         msg_file = extract_msg.Message(zip_file.open(file))
@@ -104,15 +104,7 @@ def email_page():
         try:
             email_id = int(request.args.get("id"))
         except:
-            return "Don't try and mess with the system"
-        # if select_email.urlextract is False:
-        #     print("GETTING URLS")
-        #     select_email.get_urls()
-        #     select_email.unique_url_ips()
-        #     select_email.urlextract = True
-        # for domain, ip in ip_list:
-        #     if ip is not None and not ip.queried and ip.public:
-        #         ip.get_info()
+            return redirect("/")
         return render_template("email.html", email=email_list[email_id], email_nav=email_nav, email_id=email_id)
 
 @webapp.route('/email/external_links', methods=['GET'])
@@ -130,7 +122,7 @@ def external_link():
                 select_email.urlextract = True
         except Exception as e:
             print("Error occured at email UI: " + str(e))
-            return "Don't try and mess with the system"
+            redirect("/")
     return render_template('links.html', email=email_list[email_id], email_nav=email_nav, email_id=email_id)
 
 @webapp.route('/email/relay_tracing', methods=['GET'])
@@ -157,8 +149,12 @@ def view_raw():
         try:
             email_id = int(request.args.get("id"))
         except:
-            return "Don't try and mess with the system"
+            redirect("/")
     return render_template('raw.html', email=email_list[email_id], email_nav=email_nav, email_id=email_id)
+
+@webapp.route('/loader')
+def check_load():
+    return jsonify(load=loading_status)
 
 if __name__ == "__main__":
     webapp.run(debug=True)

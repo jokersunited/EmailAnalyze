@@ -7,7 +7,7 @@ from pytz import timezone
 
 wordFrame = pd.read_csv("phishwords.csv", encoding="ISO-8859-1", engine='python')
 columns = wordFrame.columns
-columns = columns.union(["deception"])
+columns = columns.union(["deception", "blacklisted"])
 
 tags = ["Very Unlikely", "Unlikely", "Neutral", "Likely", "Very Likely"]
 
