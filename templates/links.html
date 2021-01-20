@@ -14,11 +14,16 @@
             rel='stylesheet'>
     </head>
     <body>
+        <div id="loaderback" style="display: none">
+        <div id="loader">
+        </div>
+        <h2 id="loadingstatus">Processing ...</h2>
+        </div>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">Phishing Email Analyser </a>
+                        <i class="icon-reorder shaded"></i></a><a class="brand" href="/">Phishing Email Analyser </a>
                 </div>
             </div>
             <!-- /navbar-inner -->
@@ -36,9 +41,9 @@
                                 {% if loop.index == 1 %}
                                 <li class="nav-sub"><a href="/email?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
                                 {% elif loop.index == 3 %}
-                                <li class="subactive nav-sub"><a href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                <li class="subactive nav-sub"><a onclick="document.getElementById('loaderback').style.display='block';" href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
                                 {% else %}
-                                <li class="nav-sub"><a href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                <li class="nav-sub"><a onclick="document.getElementById('loaderback').style.display='block';" href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
@@ -86,10 +91,16 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{email.domain_dict[basedomain][0].issuer['O']}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].subject['O']}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
+                                                            <p>Issuer: {{email.domain_dict[basedomain][0].issuer['CN']}}</p>
+                                                            <p>Subject: </p>
+                                                                    <ul>
+                                                                {% for key, value in email.domain_dict[basedomain][0].subject.items() %}
+                                                            <li>{{key}} - {{value}}</li>
+                                                                {% endfor %}
+                                                                        </ul>
+                                                            <p>Validity: {{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
                                                             {% endif %}
+
 
                                                                 <!-- Modal -->
                                                             <div class="modal fade" id="domainModal{{email.get_64(basedomain)}}" role="dialog"">
@@ -105,7 +116,14 @@
                                                                         <div class="ip-row">
                                                                         <div class="modal-ip">
                                                                             <h5>Registrar</h5>
-                                                                            <p>{{email.domain_dict[basedomain][0]}}</p>
+                                                                            <p>{{email.domain_dict[basedomain][0].whois['registrar'][0]}} ({{email.domain_dict[basedomain][0].whois['whois_server'][0]}})</p>
+                                                                            <br>
+                                                                            <p>Emails:</p>
+                                                                            <ul>
+                                                                                {% for email in email.domain_dict[basedomain][0].whois['emails']%}
+                                                                            <li>{{email}}</li>
+                                                                            </ul>
+
                                                                         </div>
                                                                         </div>
 
@@ -118,7 +136,7 @@
 
                                                                 </div>
                                                             </div>
-
+                                                        {% endfor %}
 
                                                             <!-- EndModal -->
 
@@ -129,12 +147,17 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{email.domain_dict[basedomain][0].issuer['O']}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].subject['O']}}</p>
-                                                            <p>{{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
+                                                            <p>Issuer: {{email.domain_dict[basedomain][0].issuer['CN']}}</p>
+                                                            <p>Subject: </p>
+                                                                    <ul>
+                                                                {% for key, value in email.domain_dict[basedomain][0].subject.items() %}
+                                                            <li>{{key}} - {{value}}</li>
+                                                                {% endfor %}
+                                                                        </ul>
+                                                            <p>Validity: {{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
                                                             {% endif %}
                                                                 {% endif %}
-                                                               
+
                                                                 <ul>
                                                             {% if email.domain_dict[basedomain][1] == none %}
                                                             
@@ -208,11 +231,12 @@
                                                             <!-- EndModal -->
                                                                {% else %}
                                                             {% for ip in email.domain_dict[basedomain][0].ip %}
-                                                                {% if ip.malicious %}
-                                                                <li><a data-toggle="modal" style="color:red" href="#baseModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>
-                                                                {% else %}
-                                                                <li><a data-toggle="modal" href="#baseModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>
-                                                                {% endif %}
+<!--                                                                {% if ip.malicious %}-->
+<!--                                                                <li><a data-toggle="modal" style="color:red" href="#baseModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>-->
+<!--                                                                {% else %}-->
+<!--                                                                <li><a data-toggle="modal" href="#baseModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>-->
+<!--                                                                {% endif %}-->
+                                <li><b>{{ip.ip}}</b></li>
                                                             <!-- Modal -->
                                                        <div class="modal fade" id="baseModal{{email.get_64(ip.ip)}}" role="dialog"">
                                                         <div class="modal-dialog">
@@ -325,9 +349,14 @@
                                                             <p>No Certificate</p>
                                                             {% else %}
                                                             <p>Certificate:</p>
-                                                            <p>{{obj.issuer['O']}}</p>
-                                                            <p>{{obj.subject['O']}}</p>
-                                                            <p>{{obj.date[0]}} - {{obj.date[1]}}</p>
+                                                            <p>Issuer: {{obj.issuer['CN']}}</p>
+                                                            <p>Subject: </p>
+                                                                    <ul>
+                                                                {% for key, value in obj.subject.items() %}
+                                                            <li>{{key}} - {{value}}</li>
+                                                                {% endfor %}
+                                                                        </ul>
+                                                            <p>Validity: {{obj.date[0]}} - {{obj.date[1]}}</p>
                                                             {% endif %}
                                                         </td>                                                             
                                                         {% else %}
@@ -338,14 +367,20 @@
                                                             {% if obj.cert == none %}
                                                             <p>No Certificate</p>
                                                             {% else %}
-                                                            <p>{{obj.issuer['O']}}</p>
-                                                            <p>{{obj.subject['O']}}</p>
-                                                            <p>{{obj.date[0]}} - {{obj.date[1]}}</p>
+                                                            <p>Issuer: {{obj.issuer['CN']}}</p>
+                                                            <p>Subject: </p>
+                                                                    <ul>
+                                                                {% for key, value in obj.subject.items() %}
+                                                            <li>{{key}} - {{value}}</li>
+                                                                {% endfor %}
+                                                                        </ul>
+                                                            <p>Validity: {{obj.date[0]}} - {{obj.date[1]}}</p>
                                                             {% endif %}
 
                                                             <ul>
                                                             {% for ip in obj.ip %}
-                                                            <li><a data-toggle="modal" href="#domainModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>
+<!--                                                            <li><a data-toggle="modal" href="#domainModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>-->
+                                                                <li><b>{{ip.ip}}</b></li>
                                                              <!-- Modal -->
                                                        <div class="modal fade" id="domainModal{{email.get_64(ip.ip)}}" role="dialog">
                                                         <div class="modal-dialog">

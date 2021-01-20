@@ -17,7 +17,7 @@
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">Phishing Email Analyser </a>
+                        <i class="icon-reorder shaded"></i></a><a class="brand" href="/">Phishing Email Analyser </a>
                 </div>
             </div>
             <!-- /navbar-inner -->
@@ -53,10 +53,11 @@
                                 <div class="btn-box-row row-fluid">
                                     <div class="phish-score btn-box big span12">
                                         <i class="icon-envelope"></i>
-                                        <h3>{{phish_list|length + clean_list|length}}</h3>
-                                        <p class="text-muted">Total Emails</p>
-                                        <p>Phishing Emails: {{phish_list|length}}</p>
-                                        <p>Clean Emails: {{clean_list|length}}</p>
+                                        <h3>{{total_emails}}</h3>
+                                        <p class="text-muted">Total Emails</p><br>
+                                        {% for key, value in tag_dict %}
+                                        <p>{{key}} : {{value}}</p>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>

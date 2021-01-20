@@ -14,11 +14,16 @@
             rel='stylesheet'>
     </head>
     <body>
+        <div id="loaderback" style="display: none">
+        <div id="loader">
+        </div>
+        <h2 id="loadingstatus">Processing ...</h2>
+        </div>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">Phishing Email Analyser </a>
+                        <i class="icon-reorder shaded"></i></a><a class="brand" href="/">Phishing Email Analyser </a>
                 </div>
             </div>
             <!-- /navbar-inner -->
@@ -36,7 +41,7 @@
                                 {% if loop.index == 1 %}
                                 <li class="subactive nav-sub"><a href="/email?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
                                 {% else %}
-                                <li class="nav-sub"><a href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                <li class="nav-sub"><a onclick="document.getElementById('loaderback').style.display='block';" href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>
@@ -63,11 +68,18 @@
                                 <div class="btn-box-row row-fluid">
                                     <div class="phish-score btn-box big span12">
                                         <i class="icon-cog"></i>
-                                        <h3>95%</h3>
-                                        <p class="text-muted">Phishing Score</p>
-                                    <div class="view-email">
-                                        <a data-toggle="modal" href="#myEmailModal">view raw</a>
-                                    </div>
+                                        {% if email.score == 0 %}
+                                        <h3>Very Unlikely</h3>
+                                        {% elif email.score < 2 %}
+                                        <h3>Unlikely</h3>
+                                        {% elif email.score < 3 %}
+                                        <h3>Neutral</h3>
+                                        {% elif email.score < 5 %}
+                                        <h3>Likely</h3>
+                                        {% else %}
+                                        <h3>Very Likely</h3>
+                                        {% endif %}
+                                        <p class="text-muted">Overall Phishing Score</p>
                                     </div>
                                     <!-- Modal -->
                                                           <div class="modal fade" id="myEmailModal" role="dialog">
@@ -101,18 +113,43 @@
 
                             <div class="btn-controls">
                                 <div class="btn-box-row row-fluid">
-                                    <div class="btn-box big span4"><i class=" icon-globe"></i><b>{{email.get_source()}}</b>
+                                    <div class="btn-box big span6">
+                                        <i class="icon-file"></i>
+                                        {% if email.phish == 1 %}
+                                        <b style="color:red">Phishing</b>
+                                        {% else %}
+                                        <b style="color:green">Clean</b>
+                                        {% endif %}
+                                        <p class="text-muted">
+                                            Text Analysis</p>
+                                    </div>
+                                    <div class="btn-box big span6">
+                                        <i class="icon-thumbs-up"></i>
+                                        <b>{{email.confidence}}%</b>
+                                        <p class="text-muted">
+                                            Confidence</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btn-controls">
+                                <div class="btn-box-row row-fluid">
+                                    <div class="btn-box big span4">
+                                        <i class=" icon-globe"></i>
+                                        {% if email.get_source() == none %}
+                                        <p style="color:black;margin-top:10px;margin-bottom:0px">Click on relay tracing for source</p>
+                                        {% else %}
+                                        <b>{{email.get_source()}}</b>
+                                        {% endif %}
                                         <p class="text-muted">
                                             Email Source</p>
-<!--                                        {% if email.get_source() == none %}-->
-<!--                                        <p>click on email relays to get source</p>-->
-<!--                                        {% endif %}-->
+
                                     </div>
-                                    <div class="btn-box big span4"><i class="icon-calendar"></i><b>{{email.get_printable_date().split(" ")[0]}}</b>
+                                    <div class="btn-box big span4"><i class="icon-calendar"></i><b>{{email.get_printable_date(dis=1).split(" ")[0]}}</b>
                                         <p class="text-muted">
                                             Date Sent</p>
                                     </div>
-                                    <div class="btn-box big span4"><i class="icon-time"></i><b>{{email.get_printable_date().split(" ")[1]}}</b>
+                                    <div class="btn-box big span4"><i class="icon-time"></i><b>{{email.get_printable_date(dis=1).split(" ")[1]}}</b>
                                         <p class="text-muted">
                                             Time Sent</p>
                                     </a>
@@ -167,9 +204,11 @@
                                                     {% elif test[0] == 'IP BLACKLIST' %}
                                                 <td class="cell-email" style="width: 70%">
                                                     <b>{{test[0]}}</b>
-                                                    {% if test[1]|length != 0 %}
-                                                    <p>{{test[1]}}</p>
-                                                    {% endif %}
+                                                    <ul>
+                                                        {% for mal in test[1] %}
+                                                        <li>{{mal[0]}}</li>
+                                                        {% endfor %}
+                                                    </ul>
                                                 </td>
                                                     {% else %}
                                                 <td class="cell-email" style="width: 70%">

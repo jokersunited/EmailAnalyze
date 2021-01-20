@@ -14,11 +14,16 @@
             rel='stylesheet'>
     </head>
     <body>
+        <div id="loaderback" style="display: none">
+        <div id="loader">
+        </div>
+        <h2 id="loadingstatus">Processing ...</h2>
+        </div>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">Phishing Email Analyser </a>
+                        <i class="icon-reorder shaded"></i></a><a class="brand" href="/">Phishing Email Analyser </a>
                 </div>
             </div>
             <!-- /navbar-inner -->
@@ -36,9 +41,9 @@
                                 {% if loop.index == 1 %}
                                 <li class="nav-sub"><a href="/email?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
                                 {% elif loop.index == 2 %}
-                                <li class="subactive nav-sub"><a href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                <li class="subactive nav-sub"><a onclick="document.getElementById('loaderback').style.display='block';" href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
                                 {% else %}
-                                <li class="nav-sub"><a href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
+                                <li class="nav-sub"><a onclick="document.getElementById('loaderback').style.display='block';" href="/email/{{ nav.lower().replace(' ', '_') }}?id={{ email_id }}"><i class="menu-icon icon-upload"></i>{{nav}}</a></li>
                                 {% endif %}
                                 {% endfor %}
                             </ul>

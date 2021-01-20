@@ -116,6 +116,7 @@ class EmailParser:
         self.phish = False
         self.black = []
         self.cat = []
+        self.score = 0
 
         #Get header and body informations
         data = emailfile
@@ -164,17 +165,18 @@ class EmailParser:
         #Checks
         self.check_auth()
         self.domain_align()
-        self.ip_link_check()
+        # self.ip_link_check()
         self.homo_check()
         self.check_text(wordFrame)
         self.check_blacklist()
-
 
         print("=== " + self.subject + " INFO ===")
         print(self.checks)
         result = self.check_model()
         self.phish = int(result[0])
-        self.confidence = str(result[1][0][int(result[0])])
+        self.confidence = str("{:.2f}".format(result[1][0][int(result[0])]*100))
+
+        self.get_cat()
 
 #==========================CLASS FUNCTIONS=================================
     def get_text(self):
@@ -233,28 +235,28 @@ class EmailParser:
         dkim_domain_filter = r'(?:header\.i=(|@)|header\.d=)(.+?)(?:;| |$)'
         spf_domain_filter = r'(?:smtp.helo|smtp.mailfrom)=(.+?)(?:;|$)'
 
-        
-        if self.headers['Authentication-Results'] is not None:
-            auths = re.findall(re_filter, self.headers['Authentication-Results'])
-        elif self.headers['ARC-Authentication-Results'] is not None:
-            auths = re.findall(re_filter, self.headers['Arc-Authentication-Results'])
-        else:
-            auths = []
-        for auth in auths:
-            auth_type = re.findall(para_filter, auth)[0]
-            auth_result = re.findall(result_filter, auth)[0]
-            try:
-                if auth_type == 'spf':
-                    auth_descrip = re.findall(spf_domain_filter, auth)[0]
+        for header, value in self.headers.items():
+            if header == 'Authentication-Results':
+                auths = re.findall(re_filter, value)
+            elif header == 'ARC-Authentication-Results':
+                auths = re.findall(re_filter, value)
+            else:
+                auths = []
+            for auth in auths:
+                auth_type = re.findall(para_filter, auth)[0]
+                auth_result = re.findall(result_filter, auth)[0]
+                try:
+                    if auth_type == 'spf':
+                        auth_descrip = re.findall(spf_domain_filter, auth)[0]
 
-                elif auth_type == 'dkim':
-                    auth_descrip = re.findall(dkim_domain_filter, auth)[0][1].split("=")[-1]
+                    elif auth_type == 'dkim':
+                        auth_descrip = re.findall(dkim_domain_filter, auth)[0][1].split("=")[-1]
 
-                else:
+                    else:
+                        auth_descrip = ""
+                except:
                     auth_descrip = ""
-            except:
-                auth_descrip = ""
-            self.checks['Email Spoofing'].append([auth_type.upper(), auth_descrip, auth_result.upper()])
+                self.checks['Email Spoofing'].append([auth_type.upper(), auth_descrip, auth_result.upper()])
         spf_check = False
         dkim_check = False
         dmarc_check = False
@@ -310,8 +312,15 @@ class EmailParser:
         return
 
     #Get a printable date to display as a string from datetime
-    def get_printable_date(self):
+    def get_printable_date(self, dis=None):
+        if dis is None:
+            return self.date.strftime('%d/%m/%Y')
+        else:
+            return self.date.strftime('%d/%m/%Y %H:%M')
+
+    def get_sortable_date(self):
         return self.date.strftime('%y/%m/%d %H:%M')
+
 
     #Truncate string length of the subject to not over display in the UI
     def get_truncated_subject(self):
@@ -389,7 +398,6 @@ class EmailParser:
             except Exception as e:
                 print("Error occured at unique url Ips: " + str(e))
         self.domain_dict = domain_dict
-        print(self.domain_dict)
 
     #Clean text in body, convert homoglyphs, stem words to prepare for list comparison
     def clean_text(self):
@@ -412,13 +420,17 @@ class EmailParser:
                         decoded = base64.b64decode(part.get_payload()).decode()
                     except:
                         decoded = part.get_payload()
-                    full_body += decoded
+                    full_body = decoded
+                    break
+            # try:
+            #     full_body = base64.b64decode(self.body.get_payload()[0].get_payload()).decode()
+            # except:
+            #     full_body = self.body.get_payload()[0].get_payload()
         else:
             try:
                 full_body = base64.b64decode(self.body.get_payload()).decode()
             except:
                 full_body = self.body.get_payload()
-
         body_text = re.sub(html_re, ' ', full_body)
         body_text = re.sub(cleaner_re, ' ', body_text)
         
@@ -434,19 +446,7 @@ class EmailParser:
 
                 each_word = re.sub(cleaner_re, '', each_word)
                 clean_word = (homoglyphs.to_ascii(each_word))
-
-                # if clean_word != []:
-                #     if clean_word[0].isupper():
-                #         clean_word = clean_word[0].lower()
-                #     else:
-                #         clean_word = clean_word[-1].lower()
-                #     if not '-' in clean_word:
-                #         word_list.append(porter.stem(clean_word))
-                #     else:
-                #         clean_word = clean_word.split('-')
-                #         clean_word = [porter.stem(x) for x in clean_word]
                 word_list.extend(clean_word)
-        
         return word_list
 
     #Creates a count & percentage count of words on the cleaned body using a wordlist in csv (First row as category)
@@ -461,17 +461,13 @@ class EmailParser:
                         continue
                     else:
                         bad_word = porter.stem(long_bad_word)
-                        if word == bad_word:
+                        if porter.stem(word.lower()) == bad_word:
                             word_dict[column][0] += 1
-                            if bad_word in word_dict[column][1]:
+                            if long_bad_word in word_dict[column][1]:
                                 continue
                             else:
                                 word_dict[column][1].append(long_bad_word)
 
-        # for key, value in word_dict.items():
-        #     word_dict[key] = value/len(word_list)
-
-        
         self.word_dict = copy.deepcopy(word_dict)
         self.word_dict.update({'length': len(word_list)+1})
 
@@ -482,69 +478,6 @@ class EmailParser:
             words.extend(value[1])
             word_count += value[0]
         self.checks['Body Content'].append(["FLAGGED WORDS",words, str(word_count)+"/"+str(len(word_list))])
-    #Get a row that contains information about all the tests (Can be used by random forest classifier)
-    def get_df_row(self):
-        columns = ['spf', 'dkim', 'dmarc', 'domain', 'iplink', 'homo', 'word_payment', 'word_account', 'word_postal', 'blacklisted_relay']
-
-        goodspf = ['PASS']
-        badspf = ['FAIL', 'SOFTFAIL']
-        row = [0 for x in columns]
-        for value in self.checks.values():
-            for check in value:
-                if check[0].lower() == 'spf':
-                    if check[2] in goodspf:
-                        row[0] = 1
-                    elif check[2] in badspf:
-                        row[0] = -1
-                    else:
-                        continue
-                if check[0].lower() == 'dkim':
-                    if check[2] in goodspf:
-                        row[1] = 1
-                    elif check[2] in badspf:
-                        row[1] = -1
-                    else:
-                        continue
-                if check[0].lower() == 'dmarc':
-                    if check[2] in goodspf:
-                        row[2] = 1
-                    elif check[2] in badspf:
-                        row[2] = -1
-                    else:
-                        continue
-                if check[0].lower() == 'domain alignment':
-                    if check[2] in goodspf:
-                        row[3] = 1
-                    elif check[2] in badspf:
-                        row[3] = -1
-                    else:
-                        continue
-                if check[0].lower() == 'ip address links':
-                    if check[2] == 'NO':
-                        row[4] = 1
-                    else:
-                        row[4] = 0
-                if check[0].lower() == 'homoglyph percentage' and float(check[2][:-1]) > 0.01:
-                    row[5] = 1
-                else:
-                    row[5] = 0
-        row[6] = self.word_dict['money'][0] * (1 + self.word_dict['scare'][0] + self.word_dict['urgency'][0]) / \
-                 self.word_dict['length']
-        row[7] = self.word_dict['credentials'][0] * (1 + self.word_dict['scare'][0] + self.word_dict['urgency'][0]) / \
-                 self.word_dict['length']
-        row[8] = self.word_dict['postal'][0] * (1 + self.word_dict['scare'][0] + self.word_dict['urgency'][0]) / \
-                 self.word_dict['length']
-        row[9] = len(self.black)
-        self.row_detail = row
-        print(self.row_detail)
-        print(columns)
-        #Contains 1 extra column due to the malicious IP relay check
-        pred_df = pd.DataFrame([self.row_detail], columns=columns)
-        # if model.predict(pred_df)[0] == 1:
-        #     self.phish = "FAIL"
-        # else:
-        #     self.phish = "PASS"
-        self.phish = "PASS"
 
     #Checks against a list for malcious IP relays
     def check_blacklist(self):
@@ -555,9 +488,90 @@ class EmailParser:
                 self.black.append(ip)
         self.checks['Email Spoofing'].append(["IP BLACKLIST", self.black, str(len(self.black))])
 
-    #Classify the email based on header and content
-    def classify(self):
-        row = self.row_detail
+    #Checks for categories that the email fits into by checking the tests and the content for flagged words
+    def get_cat(self):
+        if self.phish == 1:
+            self.cat.append("Phish")
+            self.score += 2
+
+        goodspf = ['PASS']
+        badspf = ['FAIL', 'SOFTFAIL']
+        spoof_score = 0
+        for value in self.checks.values():
+            for check in value:
+                if check[0].lower() == 'spf':
+                    if check[2] in goodspf:
+                        spoof_score += 1
+                    elif check[2] in badspf:
+                        spoof_score += -2
+                    else:
+                        continue
+                if check[0].lower() == 'dkim':
+                    if check[2] in goodspf:
+                        spoof_score += 1
+                    elif check[2] in badspf:
+                        spoof_score += -2
+                    else:
+                        continue
+                if check[0].lower() == 'dmarc':
+                    if check[2] in goodspf:
+                        spoof_score += 1
+                    elif check[2] in badspf:
+                        spoof_score += -2
+                    else:
+                        continue
+                if check[0].lower() == 'domain alignment':
+                    if check[2] in goodspf:
+                        spoof_score += 1
+                    elif check[2] in badspf:
+                        spoof_score += -1
+                    else:
+                        continue
+        if spoof_score < 1:
+            self.cat.append("Spoofed")
+            self.score += 4
+        if len(self.black) > 0:
+            self.score += 4
+            self.cat.append("Blacklisted")
+        if self.homo > 0.05:
+            self.score += 2
+            self.cat.append("Deception")
+
+        for key, value in self.word_dict.items():
+            if key == "length":
+                continue
+            if self.word_dict[key][0] > 0:
+                self.cat.append(key.capitalize())
+                self.score += 1
+
+    #Get the overall tag for whether the email is phishing or not
+    def get_phishtag(self):
+        if self.score == 0:
+            return "Very Unlikely"
+        elif self.score < 2:
+            return "Unlikely"
+        elif self.score < 3:
+            return "Neutral"
+        elif self.score < 5:
+            return "Likely"
+        else:
+            return "Very Likely"
+
+    #get the summary of all results and categories for a particular email
+    def get_resulttag(self):
+        result_str = "["
+        if self.phish == 1:
+            add_str = "Phish (" + self.confidence + "%)"
+            result_str += add_str
+        for cat in self.cat:
+            if self.phish == 0 and self.cat.index(cat) == 0:
+                result_str += cat
+            elif cat == "Phish":
+                continue
+            else:
+                result_str = result_str + ", " + cat
+        result_str += "]"
+        return result_str
 
     #Get a truncated base64 encoded string (used to create HTML modal IDs)
     def get_64(self, s):
@@ -565,4 +579,5 @@ class EmailParser:
 
     def get_month(self):
         pass
+
 

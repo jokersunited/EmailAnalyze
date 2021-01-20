@@ -18,7 +18,7 @@
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-                        <i class="icon-reorder shaded"></i></a><a class="brand" href="index.html">Phishing Email Analyser </a>
+                        <i class="icon-reorder shaded"></i></a><a class="brand" href="/">Phishing Email Analyser </a>
                 </div>
             </div>
             <!-- /navbar-inner -->
@@ -60,9 +60,9 @@
                                         <thead>
                                           <tr>
 											<th>Email</th>
-											<th>Subject</th>
+											<th>Subject</th>FOverall
 											<th>Result</th>
-											<th>Date (Y/M/D)</th>
+											<th>Date (D/M/Y)</th>
 										</tr>
                                             </thead>
                                             <tbody>
@@ -75,9 +75,18 @@
                                                     <a href="/email?id={{loop.index-1}}">{{email.get_truncated_subject()}}</a>
                                                 </td>
                                                 <td class="cell-time align-centre">
-                                                    {{ email.phish }}
+                                                    {% if email.score >= 3%}
+                                                    <b style="color:red;">{{ email.get_phishtag() }}</b>
+                                                    {% else %}
+                                                    <b>{{ email.get_phishtag() }}</b>
+                                                    {% endif %}
+                                                    {% if email.cat != [] %}
+                                                    <br>{{email.get_resulttag()}}
+                                                    {% endif %}
+
                                                 </td>
                                                 <td data-sort="{{email.date}}" class="cell-time align-right">
+                                                     <span style="display:none;">{{email.get_sortable_date()}}</span>
                                                     {{ email.get_printable_date() }}
                                                 </td>
                                             </tr>
