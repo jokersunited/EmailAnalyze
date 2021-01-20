@@ -17,6 +17,7 @@
         <div id="loaderback" style="display: none">
         <div id="loader">
         </div>
+        <h2 id="loadingstatus">Processing ...</h2>
         </div>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
@@ -230,11 +231,12 @@
                                                             <!-- EndModal -->
                                                                {% else %}
                                                             {% for ip in email.domain_dict[basedomain][0].ip %}
-                                                                {% if ip.malicious %}
-                                                                <li><a data-toggle="modal" style="color:red" href="#baseModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>
-                                                                {% else %}
-                                                                <li><a data-toggle="modal" href="#baseModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>
-                                                                {% endif %}
+<!--                                                                {% if ip.malicious %}-->
+<!--                                                                <li><a data-toggle="modal" style="color:red" href="#baseModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>-->
+<!--                                                                {% else %}-->
+<!--                                                                <li><a data-toggle="modal" href="#baseModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>-->
+<!--                                                                {% endif %}-->
+                                <li><b>{{ip.ip}}</b></li>
                                                             <!-- Modal -->
                                                        <div class="modal fade" id="baseModal{{email.get_64(ip.ip)}}" role="dialog"">
                                                         <div class="modal-dialog">
@@ -377,7 +379,8 @@
 
                                                             <ul>
                                                             {% for ip in obj.ip %}
-                                                            <li><a data-toggle="modal" href="#domainModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>
+<!--                                                            <li><a data-toggle="modal" href="#domainModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>-->
+                                                                <li><b>{{ip.ip}}</b></li>
                                                              <!-- Modal -->
                                                        <div class="modal fade" id="domainModal{{email.get_64(ip.ip)}}" role="dialog">
                                                         <div class="modal-dialog">

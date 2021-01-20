@@ -17,6 +17,7 @@
         <div id="loaderback" style="display: none">
         <div id="loader">
         </div>
+        <h2 id="loadingstatus">Processing ...</h2>
         </div>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
@@ -117,7 +118,7 @@
                                         {% if email.phish == 1 %}
                                         <b style="color:red">Phishing</b>
                                         {% else %}
-                                        <b style="color:green">No Phishing</b>
+                                        <b style="color:green">Clean</b>
                                         {% endif %}
                                         <p class="text-muted">
                                             Text Analysis</p>

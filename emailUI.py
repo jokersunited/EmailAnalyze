@@ -155,7 +155,7 @@ def view_raw():
     return render_template('raw.html', email=email_list[email_id], email_nav=email_nav, email_id=email_id)
 
 if __name__ == "__main__":
-    webapp.run(webapp, debug=True)
+    webapp.run(host="127.0.0.1", debug=True)
     
 
 

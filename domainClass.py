@@ -32,14 +32,14 @@ class UrlDomain:
                 query = socket.gethostbyname_ex(self.domain)
                 for ip in query[2]:
                     ip_addr = IP(ip)
-                    ip_addr.get_info()
+                    # ip_addr.get_info()
                     self.ip.append(ip_addr)
                 self.get_cert()
             except:
                 self.ip = [] 
         else:
             self.ip = IP(self.domain)
-            self.ip.get_info()
+            # self.ip.get_info()
         # except Exception as e:
         #     print(e)
         #     return
