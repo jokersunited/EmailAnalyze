@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 
 download("wordnet")
 download("averaged_perceptron_tagger")
+download("stopwords")
 
 tag_map = defaultdict(lambda: wn.NOUN)
 
