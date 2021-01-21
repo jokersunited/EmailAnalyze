@@ -2,7 +2,15 @@
 
 **Table of Contents**
 
-[TOC]
+- [Email Header Analyzer](#email-header-analyzer)
+  * [Features](#features)
+  * [Installation (Localhost)](#installation--localhost-)
+    + [Pre-requisites](#pre-requisites)
+    + [Steps](#steps)
+  * [Installation (Remote Deployment)](#installation--remote-deployment-)
+    + [Pre-requisites](#pre-requisites-1)
+    + [Steps](#steps-1)
+    + [Future Works](#future-works)
 
 ## Features
 
@@ -16,6 +24,7 @@
 	- Blacklisted (Blacklisted SMTP relays)
 	- Deception (Homoglyph usage percentage)
 	- Money/Credentials/Scare/Urgency/Postal (Customisable)
+- ML text analysis using SVM
 - Overall Phishing Score
 - Graphical Display
 
@@ -48,3 +57,6 @@ Linux environment with Docker and NGINX (possible to deploy on windows too but n
 2. run ./install.sh (Remember to give execution rights to the file "chmod +x install.sh")
  	- This step creates the docker image and automatically runs it exposing port 8000
 3. Setup NGINX to reverse proxy to port 8000 locally (refer to https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+4. Ensure that your firewall blocks port 8000 from public access if not users can bypass the NGINX proxy
+
+### Future Works
