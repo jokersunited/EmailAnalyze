@@ -1,3 +1,3 @@
 #!/bin/sh
 docker build -t emailflask/python . --rm
-docker run emailflask/python -p 8000:8000
+docker run -p 8000:8000 emailflask/python
