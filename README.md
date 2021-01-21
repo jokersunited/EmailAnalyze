@@ -2,15 +2,14 @@
 
 **Table of Contents**
 
-- [Email Header Analyzer](#email-header-analyzer)
-  * [Features](#features)
-  * [Installation (Localhost)](#installation--localhost-)
-    + [Pre-requisites](#pre-requisites)
-    + [Steps](#steps)
-  * [Installation (Remote Deployment)](#installation--remote-deployment-)
-    + [Pre-requisites](#pre-requisites-1)
-    + [Steps](#steps-1)
-    + [Future Works](#future-works)
+- [Features](#features)
+- [Installation (Localhost)](#installation--localhost-)
+  * [Pre-requisites](#pre-requisites)
+  * [Steps](#steps)
+- [Installation (Remote Deployment)](#installation--remote-deployment-)
+  * [Pre-requisites](#pre-requisites-1)
+  * [Steps](#steps-1)
+  * [Future Works](#future-works)
 
 ## Features
 
