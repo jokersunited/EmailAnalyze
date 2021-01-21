@@ -212,7 +212,7 @@ class EmailParser:
     #Check for domain alignment between from field and source address in header
     def domain_align(self):
         if self.sender_email == "Unavailable" or self.return_path == "Unavailable":
-            self.checks['Email Spoofing'].append(["DOMAIN ALGINMENT","", "FAIL"])
+            self.checks['Email Spoofing'].append(["DOMAIN ALIGNMENT","", "FAIL"])
             return
 
         base_domain_extractor = r'@(?:.*\.|)(.+?\.)([^\.]+?)$'
@@ -221,7 +221,7 @@ class EmailParser:
         return_domain = re.findall(base_domain_extractor, self.return_path)[0]
         
         if sender_domain != return_domain:
-            self.checks['Email Spoofing'].append(["DOMAIN ALGINMENT","", "FAIL"])
+            self.checks['Email Spoofing'].append(["DOMAIN ALIGNMENT","", "FAIL"])
         else:
             self.checks['Email Spoofing'].append(["DOMAIN ALIGNMENT","", "PASS"])
 
@@ -495,7 +495,7 @@ class EmailParser:
             self.score += 2
 
         goodspf = ['PASS']
-        badspf = ['FAIL', 'SOFTFAIL']
+        badspf = ['FAIL', 'SOFTFAIL', 'TEMPERROR', 'PERMERROR']
         spoof_score = 0
         for value in self.checks.values():
             for check in value:

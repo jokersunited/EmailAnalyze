@@ -7,6 +7,7 @@ from graphFunc import *
 
 from time import sleep
 
+from trainer import rfTrain
 #flask initialization
 webapp = Flask(__name__)
 webapp.config['SECRET_KEY'] = b'CSABOLEH'
@@ -17,6 +18,7 @@ Session(webapp)
 allowed_files = ["txt", "eml", "msg"]
 email_nav = ["Overview", "Relay Tracing", "External Links", "View Raw"]
 loading_status = ""
+dataframe = None
 
 #Check filenames to determine if single file, multiple file or invalid format
 def check_files(filename):
@@ -150,6 +152,24 @@ def view_raw():
         except:
             redirect("/")
     return render_template('raw.html', email=session['email_list'][email_id], email_nav=email_nav, email_id=email_id)
+
+@webapp.route('/rf', methods=['GET'])
+def rf():
+    global dataframe
+    email_type = request.args.get("type")
+    if dataframe is None:
+        print(dataframe)
+        dataframe = rfTrain.create_df(session['email_list'], email_type)
+    else:
+        dataframe = dataframe.append(rfTrain.create_df(session['email_list'], email_type))
+        print(dataframe)
+    return "OK"
+
+
+@webapp.route('/rftrain')
+def rftrain():
+    dataframe.to_pickle('emails.pickle')
+    return "OK"
 
 if __name__ == "__main__":
     webapp.run(host="127.0.0.1", debug=True)

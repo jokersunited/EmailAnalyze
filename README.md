@@ -2,7 +2,6 @@
 
 **Table of Contents**
 
-- [Email Header Analyzer](#email-header-analyzer)
   * [Features](#features)
   * [Installation (Localhost)](#installation--localhost-)
     + [Pre-requisites](#pre-requisites)
