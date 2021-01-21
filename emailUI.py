@@ -104,7 +104,7 @@ def email_page():
             email_id = int(request.args.get("id"))
         except:
             return redirect("/")
-        return render_template("email.html", email=session['email_list'][email_id], email_nav=email_nav, email_id=session['email_list'])
+        return render_template("email.html", email=session['email_list'][email_id], email_nav=email_nav, email_id=email_id)
 
 @webapp.route('/email/external_links', methods=['GET'])
 def external_link():
