@@ -77,43 +77,43 @@ def rf_train():
         X_train, X_test, y_train, y_test = train_test_split(df[[col for col in df.columns if col not in ['type', 'svm']]], df['type'], test_size=0.3)
 
         # Create a Gaussian Classifier
-        clf = RandomForestClassifier(n_estimators=200, verbose=False, min_samples_leaf=2, min_samples_split=3)
-        lrg =  LogisticRegression(max_iter=1200000)
+        clf = RandomForestClassifier(n_estimators=200, verbose=False)
+        lrg = LogisticRegression(max_iter=1200000)
         knn = KNeighborsClassifier(n_neighbors=8)
         gboost = GradientBoostingClassifier(n_estimators=200)
         xgboost = XGBClassifier()
-        xgboostrf = XGBRFClassifier()
+        xgboostrf = XGBRFClassifier(n_estimators=200)
 
-        xgboost.fit(X_train, y_train)
-        y_pred = xgboost.predict(X_test)
-        accuracy = str(metrics.accuracy_score(y_test, y_pred))
-
-        print("XGBOOST: " + accuracy)
-
-        feature_imp = pd.Series(xgboost.feature_importances_,
-                                index=[col for col in df.columns if col not in ['type', 'svm']]).sort_values(
-            ascending=False)
+        # xgboost.fit(X_train, y_train)
+        # y_pred = xgboost.predict(X_test)
+        # accuracy = str(metrics.accuracy_score(y_test, y_pred))
+        #
+        # print("XGBOOST: " + accuracy)
+        #
+        # feature_imp = pd.Series(xgboost.feature_importances_,
+        #                         index=[col for col in df.columns if col not in ['type', 'svm']]).sort_values(
+        #     ascending=False)
         # print(feature_imp)
 
-        xgboostrf.fit(X_train, y_train)
-        y_pred = xgboostrf.predict(X_test)
-        accuracy = str(metrics.accuracy_score(y_test, y_pred))
-
-        print("XGBOOSTRF: " + accuracy)
-
-        feature_imp = pd.Series(xgboostrf.feature_importances_,
-                                index=[col for col in df.columns if col not in ['type', 'svm']]).sort_values(
-            ascending=False)
+        # xgboostrf.fit(X_train, y_train)
+        # y_pred = xgboostrf.predict(X_test)
+        # accuracy = str(metrics.accuracy_score(y_test, y_pred))
+        #
+        # print("XGBOOSTRF: " + accuracy)
+        #
+        # feature_imp = pd.Series(xgboostrf.feature_importances_,
+        #                         index=[col for col in df.columns if col not in ['type', 'svm']]).sort_values(
+        #     ascending=False)
         # print(feature_imp)
 
-        gboost.fit(X_train, y_train)
-        y_pred = gboost.predict(X_test)
-        accuracy = str(metrics.accuracy_score(y_test, y_pred))
-
-        print("GBOOST: " + accuracy)
-
-        feature_imp = pd.Series(gboost.feature_importances_,
-                                index=[col for col in df.columns if col not in ['type', 'svm']]).sort_values(ascending=False)
+        # gboost.fit(X_train, y_train)
+        # y_pred = gboost.predict(X_test)
+        # accuracy = str(metrics.accuracy_score(y_test, y_pred))
+        #
+        # print("GBOOST: " + accuracy)
+        #
+        # feature_imp = pd.Series(gboost.feature_importances_,
+        #                         index=[col for col in df.columns if col not in ['type', 'svm']]).sort_values(ascending=False)
         # print(feature_imp)
 
 
@@ -134,10 +134,10 @@ def rf_train():
 
         print("RNF: " + accuracy)
 
-        # print(metrics.classification_report(y_test, y_pred, labels=[0, 1]))
+        print(metrics.classification_report(y_test, y_pred, labels=[0, 1]))
         feature_imp = pd.Series(clf.feature_importances_, index=[col for col in df.columns if col not in ['type', 'svm']]).sort_values(ascending=False)
-        # print(feature_imp)
-        #
+        print(feature_imp)
+
         # lrg.fit(X_train, y_train)
         # y_pred = lrg.predict(X_test)
         # accuracy = str(metrics.accuracy_score(y_test, y_pred))
