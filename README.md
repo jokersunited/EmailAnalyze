@@ -12,9 +12,9 @@
 - URL parsing with Domain (WHOIS) & Certificate (HTTPS) checks
 - Homoglyph Checks
 - Email Categorisation
-	- Spoofed
-	- Blacklisted
-	- Deception
+	- Spoofed (SPF, DKIM, DMARC, Domain Alignment)
+	- Blacklisted (Blacklisted SMTP relays)
+	- Deception (Homoglyph usage percentage)
 	- Money/Credentials/Scare/Urgency/Postal (Customisable)
 - Overall Phishing Score
 - Graphical Display
