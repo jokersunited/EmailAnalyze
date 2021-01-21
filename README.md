@@ -1,8 +1,8 @@
-#Email Header Analyzer
+# Email Header Analyzer
 
 **Table of Contents**
 
-[TOCM]
+[TOC]
 
 ## Features
 
@@ -19,13 +19,13 @@
 - Overall Phishing Score
 - Graphical Display
 
-##Installation (Localhost)
+## Installation (Localhost)
 Using python3 and flask, a local WSGI server will run locally that provides the user an interface to interact with the application.
 
-###Pre-requisites
+### Pre-requisites
 Python3 with pip installed
 
-###Steps
+### Steps
 Due to some inherent bugs in the homogplyhs package that causes the application to crash, some manual fixing is required.
 
 1. $pip install -r requirements.txt
@@ -35,15 +35,15 @@ Due to some inherent bugs in the homogplyhs package that causes the application 
 5. Access the UI through your browser using "http://localhost:5000"
 6. Upload your ZIP file with all the email headers using the UI
 
-##Installation (Remote Deployment)
+## Installation (Remote Deployment)
 The entire application is delivered through a docker container in a linux enviornment. Gunicorn is used within the docker container as a WSGI for interacting with the flask application. NGINX is used  within the host linux environment to serve as the public facing web server to proxy the traffic to Gunicorn running within the docker container.
 
 While the application can work without the NGINX proxy, Gunicorn on its own is prone to DDoS and the NGINX proxy will serve to filter and only direct appropirate traffic to the gunicorn server which will greatly conserve the amount of resources that Gunicorn uses.
 
-###Pre-requisites
+### Pre-requisites
 Linux environment with Docker and NGINX (possible to deploy on windows too but not tested)
 
-###Steps
+### Steps
 1. git clone entire repository into a folder of your choice
 2. run ./install.sh (Remember to give execution rights to the file "chmod +x install.sh")
  	- This step creates the docker image and automatically runs it exposing port 8000
