@@ -69,7 +69,7 @@ def create_df(email_list, type):
     return data
 
 def rf_train():
-    df = pd.read_pickle('C:/Users/jshww/Documents/InternCSA2/IWSP CSA/EmailAnalyze/emails.pickle')
+    df = pd.read_pickle('../emails.pickle')
     X_train, X_test, y_train, y_test = train_test_split(df[[col for col in df.columns if col not in ['type', 'svm']]], df['type'], test_size=0.3)
 
     # Create a Gaussian Classifier
