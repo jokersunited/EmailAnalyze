@@ -103,7 +103,6 @@ class EmailParser:
         #Header and Body content of the email
         self.headers = ""
         self.body = ""
-        self.text = ""
         #Email inforation of sender
         self.sender_email = ""
         self.sender_name = ""
@@ -134,7 +133,6 @@ class EmailParser:
         parser = HeaderParser()
         self.headers = parser.parsestr(data)
         self.body = email.message_from_string(data, policy=policy.default)
-        self.text = self.get_text()
 
         #Get source and destination and reply to addresses
         if self.headers['Delivered-To'] is not None:
@@ -190,8 +188,18 @@ class EmailParser:
         self.get_cat()
 
 #==========================CLASS FUNCTIONS=================================
-    def get_text(self):
-        return self.body.get_body(preferencelist=('html', 'plain')).get_payload()
+    def get_text(self, text_type=None):
+        if text_type == "URL":
+            try:
+                return self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", "").replace(
+                    "\r\n", "")
+            except:
+                return self.body.get_payload()
+        else:
+            try:
+                return self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", "").replace("\r\n", " ")
+            except:
+                return self.body.get_payload()
         # return
         # if self.body.is_multipart():
         #     full_body = ""
@@ -378,17 +386,15 @@ class EmailParser:
         # if type(self.body.get_payload()) == list:
         #     raw_urls = re.findall(url_regex, str(self.body.get_payload()[-1]))
         # else:
-        processed_body = self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", "").replace("\r\n", "")
-        print(processed_body)
+        processed_body = self.get_text(text_type="URL")
         raw_urls = re.findall(url_regex, processed_body)
             
         urls = [(x[0]+x[1]).replace("\"", "").replace(">", "").replace("\n", "").split(" ")[0] for x in raw_urls]
-        print("IM HERW!")
-        print(urls)
         self.urls = urls
     #Check the percentage of homoglyphs for the text body
     def homo_check(self):
-        self.homo = check_homo_percentage(self.body.get_body(preferencelist=('html', 'plain')).get_payload())
+        # print(self.body.get_body(preferencelist=('html', 'plain')))
+        self.homo = check_homo_percentage(self.get_text())
         self.checks['Body Content'].append(["HOMOGLYPH PERCENTAGE","", str("{:.2f}".format(self.homo*100))+"%"])
 
     #Check for IP addresses in URLs, seperate domains from subdomains and group URLs from similar domains together, get HTTPS cert info
@@ -435,7 +441,7 @@ class EmailParser:
             ascii_strategy=hg.STRATEGY_REMOVE,
             ascii_range= range1 + range2 + range3)
 
-        full_body = self.body.get_body(preferencelist=('html', 'plain')).get_payload()
+        full_body = self.get_text()
         # if self.body.is_multipart():
         #     full_body = ""
         #     for part in self.body.get_payload():
@@ -471,6 +477,7 @@ class EmailParser:
                 each_word = re.sub(cleaner_re, '', each_word)
                 clean_word = (homoglyphs.to_ascii(each_word))
                 word_list.extend(clean_word)
+        print(word_list)
         return word_list
 
     #Creates a count & percentage count of words on the cleaned body using a wordlist in csv (First row as category)

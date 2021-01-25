@@ -197,3 +197,7 @@ td.word-wrap {
     transform: translate(-50%, -50%);
     font-size: large;
 }
+
+.module-head h3 {
+    height: auto;
+}
