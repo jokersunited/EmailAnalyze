@@ -4,6 +4,7 @@ from emailClass import *
 import zipfile
 import extract_msg
 from graphFunc import *
+import cffi
 
 from time import sleep
 
@@ -12,6 +13,7 @@ from trainer import rfTrain
 webapp = Flask(__name__)
 webapp.config['SECRET_KEY'] = b'CSABOLEH'
 webapp.config['SESSION_TYPE'] = 'filesystem'
+webapp.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024    # 128 Mb limit
 Session(webapp)
 
 #Global variables to be used

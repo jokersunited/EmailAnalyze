@@ -23,7 +23,7 @@ from nltk.corpus import stopwords
 from sklearn.ensemble import RandomForestClassifier
 from ipaddress import ip_network, ip_address
 
-remove_chars = ["<", ">", ";", ":", "\n", "]", "["]
+remove_chars = ["<", ">", ";", "\n", "]", "["]
 range1 = list(range(ord('a'), ord('z')))
 range2 = list(range(ord('A'), ord('Z')))
 range3 = [ord('-'), ord('\''), ord("©")]
@@ -280,6 +280,7 @@ class EmailParser:
         for header, value in self.headers.items():
             if header == "Received":
                 ip_addr = re_extractor(value.split("by")[0], "ip")
+                print(ip_addr)
                 if ip_addr == "":
                     ip_obj = None
                     continue
@@ -292,6 +293,7 @@ class EmailParser:
                 for item in split_spf:
                     if "client-ip" in item:
                         ip_addr = replace_chars(item.split("=")[1])
+                        print(ip_addr)
                         if ip_addr == "":
                             ip_obj = None
                         else:
