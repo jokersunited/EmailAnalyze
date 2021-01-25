@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, redirect, jsonify, session
 from flask_session import Session
 from emailClass import *
+from domainClass import *
 import zipfile
 import extract_msg
 from graphFunc import *
-import cffi
-
 from time import sleep
+import copy
 
 from trainer import rfTrain
 #flask initialization
@@ -115,18 +115,16 @@ def external_link():
     if not session.get('email_list'):
         return redirect("/upload")
     else:
-        try:
-            email_id = int(request.args.get("id"))
-            select_email = session['email_list'][int(email_id)]
-            if select_email.urlextract is False:
-                print("GETTING URLS")
-                select_email.get_urls()
-                select_email.unique_url_ips()
-                select_email.urlextract = True
-        except Exception as e:
-            print("Error occured at email UI: " + str(e))
-            redirect("/")
-    return render_template('links.html', email=session['email_list'][email_id], email_nav=email_nav, email_id=email_id)
+    # try:
+        email_id = int(request.args.get("id"))
+        select_email = copy.deepcopy(session['email_list'][int(email_id)])
+        if select_email.urlextract is False:
+            select_email.get_urls()
+            select_email.unique_url_ips()
+    # except Exception as e:
+    #     print("Error occured at email UI: " + str(e))
+        redirect("/")
+    return render_template('links.html', email=select_email, email_nav=email_nav, email_id=email_id)
 
 @webapp.route('/email/relay_tracing', methods=['GET'])
 def relay_trace():

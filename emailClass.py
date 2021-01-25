@@ -34,6 +34,17 @@ porter = PorterStemmer()
 with open("svm_model.pkl", 'rb') as f:
     model = pickle.load(f)
 
+# def extract_multi(body):
+#     if body.is_multipart():
+#         for part in body.get_payload():
+#             extract_multi(part)
+#     elif "text" in body.get_content_type():
+#         try:
+#             full_body = base64.b64decode(body.get_payload()).decode()
+#         except:
+#             full_body = body.get_payload()
+#         return full_body
+#     return
 
 #Check if string is base64
 def isBase64(sb):
@@ -180,22 +191,31 @@ class EmailParser:
 
 #==========================CLASS FUNCTIONS=================================
     def get_text(self):
-        if self.body.is_multipart():
-            full_body = ""
-            for part in self.body.get_payload():
-                if "text" in part.get_content_type():
-                    try:
-                        decoded = base64.b64decode(part.get_payload()).decode()
-                    except:
-                        decoded = part.get_payload()
-                    full_body += decoded
-        else:
-            try:
-                full_body = base64.b64decode(self.body.get_payload()).decode()
-            except:
-                full_body = self.body.get_payload()
-
-        return full_body
+        return self.body.get_body(preferencelist=('html', 'plain')).get_payload()
+        # return
+        # if self.body.is_multipart():
+        #     full_body = ""
+        #     for part in self.body.get_payload():
+        #         if "multipart" in part.get_content_type():
+        #             print((part.get_payload()))
+        #             try:
+        #                 decoded = base64.b64decode(part.get_payload()).decode()
+        #             except:
+        #                 decoded = part.get_payload()
+        #             full_body += decoded
+        #         elif "text" in part.get_content_type():
+        #             try:
+        #                 decoded = base64.b64decode(part.get_payload()).decode()
+        #             except:
+        #                 decoded = part.get_payload()
+        #             full_body += decoded
+        # else:
+        #     try:
+        #         full_body = base64.b64decode(self.body.get_payload()).decode()
+        #     except:
+        #         full_body = self.body.get_payload()
+        #
+        # return full_body
 
     #Create a string to display the checks for IP address links
     def ip_link_check(self):
@@ -355,12 +375,14 @@ class EmailParser:
     def get_urls(self):
         url_regex = r'(http:\/\/|https:\/\/)([a-zA-Z0-9](.+?[^=])*?)(?:>|"|$| |\n|\r)'
         
-        if type(self.body.get_payload()) == list:
-            raw_urls = re.findall(url_regex, str(self.body.get_payload()[-1]))
-        else:
-            raw_urls = re.findall(url_regex, str(self.body.get_payload()))
+        # if type(self.body.get_payload()) == list:
+        #     raw_urls = re.findall(url_regex, str(self.body.get_payload()[-1]))
+        # else:
+        raw_urls = re.findall(url_regex, self.body.get_body(preferencelist=('html', 'plain')).get_payload())
             
         urls = [(x[0]+x[1]).replace("\"", "").replace("=", "").replace(">", "").replace("\n", "").split(" ")[0] for x in raw_urls]
+        print("IM HERW!")
+        print(urls)
         self.urls = urls
     #Check the percentage of homoglyphs for the text body
     def homo_check(self):
@@ -414,30 +436,31 @@ class EmailParser:
             ascii_strategy=hg.STRATEGY_REMOVE,
             ascii_range= range1 + range2 + range3)
 
-        if self.body.is_multipart():
-            full_body = ""
-            for part in self.body.get_payload():
-                if "text" in part.get_content_type():
-                    try:
-                        decoded = base64.b64decode(part.get_payload()).decode()
-                    except:
-                        decoded = part.get_payload()
-                    full_body = decoded
-                    break
-            # try:
-            #     full_body = base64.b64decode(self.body.get_payload()[0].get_payload()).decode()
-            # except:
-            #     full_body = self.body.get_payload()[0].get_payload()
-        else:
-            try:
-                full_body = base64.b64decode(self.body.get_payload()).decode()
-            except:
-                full_body = self.body.get_payload()
+        full_body = self.body.get_body(preferencelist=('html', 'plain')).get_payload()
+        # if self.body.is_multipart():
+        #     full_body = ""
+        #     for part in self.body.get_payload():
+        #         print(part)
+        #         if "text" in part.get_content_type():
+        #             try:
+        #                 decoded = base64.b64decode(part.get_payload()).decode()
+        #             except:
+        #                 decoded = part.get_payload()
+        #             full_body = decoded
+        #             break
+        #     # try:
+        #     #     full_body = base64.b64decode(self.body.get_payload()[0].get_payload()).decode()
+        #     # except:
+        #     #     full_body = self.body.get_payload()[0].get_payload()
+        # else:
+        #     try:
+        #         full_body = base64.b64decode(self.body.get_payload()).decode()
+        #     except:
+        #         full_body = self.body.get_payload()
         body_text = re.sub(html_re, ' ', full_body)
         body_text = re.sub(cleaner_re, ' ', body_text)
         
         list_body = body_text.split(" ")
-
 
         for each_word in list_body:
             if each_word in money_chars:
