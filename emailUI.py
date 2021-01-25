@@ -171,6 +171,14 @@ def rftrain():
     dataframe.to_pickle('emails.pickle')
     return "OK"
 
+
+@webapp.route('/api/analyze', methods=['POST'])
+def api_analyze():
+    if request.args.get['emailfile'] is not None:
+        file = request.files['emailfile']
+        if file.filename not in allowed_files:
+            return 403
+
 if __name__ == "__main__":
     webapp.run(host="127.0.0.1", debug=True)
     
