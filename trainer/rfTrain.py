@@ -1,8 +1,5 @@
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from xgboost import XGBClassifier, XGBRFClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 import pandas as pd
 
