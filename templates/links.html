@@ -101,7 +101,7 @@
                                                             <p>Validity: {{email.domain_dict[basedomain][0].date[0]}} - {{email.domain_dict[basedomain][0].date[1]}}</p>
                                                             {% endif %}
 
-                                                            </td>
+
                                                                 <!-- Modal -->
                                                             <div class="modal fade" id="domainModal{{email.get_64(basedomain)}}" role="dialog"">
                                                                 <div class="modal-dialog">
@@ -122,6 +122,7 @@
                                                                             <ul>
                                                                                 {% for email in email.domain_dict[basedomain][0].whois['emails']%}
                                                                             <li>{{email}}</li>
+                                                                                {% endfor %}
                                                                             </ul>
 
                                                                         </div>
@@ -136,7 +137,7 @@
 
                                                                 </div>
                                                             </div>
-                                                        {% endfor %}
+
 
                                                             <!-- EndModal -->
 
@@ -301,8 +302,8 @@
 
                                                         </div>
                                                     </div>
-                                                
-                                                    
+
+
                                                 <!-- EndModal -->
                                                             {% endfor %}
                                                             {% endif %}
@@ -381,73 +382,73 @@
                                                             {% for ip in obj.ip %}
 <!--                                                            <li><a data-toggle="modal" href="#domainModal{{email.get_64(ip.ip)}}">{{ip.ip}}</a></li>-->
                                                                 <li><b>{{ip.ip}}</b></li>
-<!--                                                             &lt;!&ndash; Modal &ndash;&gt;-->
-<!--                                                       <div class="modal fade" id="domainModal{{email.get_64(ip.ip)}}" role="dialog">-->
-<!--                                                        <div class="modal-dialog">-->
+                                                             <!-- Modal -->
+                                                       <div class="modal fade" id="domainModal{{email.get_64(ip.ip)}}" role="dialog">
+                                                        <div class="modal-dialog">
 
-<!--                                                          &lt;!&ndash; Modal content&ndash;&gt;-->
-<!--                                                          <div class="modal-content">-->
-<!--                                                            <div class="modal-header">-->
-<!--                                                              <button type="button" class="close" data-dismiss="modal">&times;</button>-->
-<!--                                                              <h4 class="modal-title">{{ip.ip}}</h4> <a href="https://whatismyipaddress.com/ip/{{ip.ip}}">IP LOOKUP</a>-->
-<!--                                                            </div>-->
-<!--                                                            <div class="modal-body">-->
-<!--                                                                <div class="ip-row">-->
-<!--                                                                <div class="modal-ip">-->
-<!--                                                                    <h5>Location</h5>-->
-<!--                                                                    <p>{{ip.country}}</p>-->
-<!--                                                                </div>-->
-<!--                                                                <div class="modal-ip">-->
-<!--                                                                    <h5>Emails</h5>-->
-<!--                                                                    {% for email in ip.emails %}-->
-<!--                                                                    <p>{{email}}</p>-->
-<!--                                                                    {% endfor %}-->
-<!--                                                                </div>-->
-<!--                                                                </div>-->
-<!--                                                                <div class="ip-row">-->
-<!--                                                                <div class="modal-ip">-->
-<!--                                                                    <h5>Details</h5>-->
-<!--                                                                    <p>{{ip.asn_descrip}}</p>-->
-<!--                                                                    <p>{{ip.name}}</p>-->
-<!--                                                                    <P>{{ip.description}}</P>-->
-<!--                                                                </div>-->
-<!--                                                                </div>-->
-<!--                                                                <div class="ip-row">-->
-<!--                                                                <div class="modal-ip">-->
-<!--                                                                    <h5>Address</h5>-->
-<!--                                                                    <p>{{ip.address}}</p>-->
+                                                          <!-- Modal content-->
+                                                          <div class="modal-content">
+                                                            <div class="modal-header">
+                                                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                              <h4 class="modal-title">{{ip.ip}}</h4> <a href="https://whatismyipaddress.com/ip/{{ip.ip}}">IP LOOKUP</a>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="ip-row">
+                                                                <div class="modal-ip">
+                                                                    <h5>Location</h5>
+                                                                    <p>{{ip.country}}</p>
+                                                                </div>
+                                                                <div class="modal-ip">
+                                                                    <h5>Emails</h5>
+                                                                    {% for email in ip.emails %}
+                                                                    <p>{{email}}</p>
+                                                                    {% endfor %}
+                                                                </div>
+                                                                </div>
+                                                                <div class="ip-row">
+                                                                <div class="modal-ip">
+                                                                    <h5>Details</h5>
+                                                                    <p>{{ip.asn_descrip}}</p>
+                                                                    <p>{{ip.name}}</p>
+                                                                    <P>{{ip.description}}</P>
+                                                                </div>
+                                                                </div>
+                                                                <div class="ip-row">
+                                                                <div class="modal-ip">
+                                                                    <h5>Address</h5>
+                                                                    <p>{{ip.address}}</p>
 
-<!--                                                                </div>-->
-<!--                                                                </div>-->
-<!--                                                                <div class="ip-row">-->
-<!--                                                                <div class="modal-ip">-->
-<!--                                                                    <h5>Date</h5>-->
+                                                                </div>
+                                                                </div>
+                                                                <div class="ip-row">
+                                                                <div class="modal-ip">
+                                                                    <h5>Date</h5>
 
-<!--                                                                    <p>Created: {{ip.created}}</p>-->
-<!--                                                                    <p>Updated: {{ip.updated}}</p>-->
+                                                                    <p>Created: {{ip.created}}</p>
+                                                                    <p>Updated: {{ip.updated}}</p>
 
-<!--                                                                </div>-->
-<!--                                                                </div>-->
-<!--                                                                <div class="ip-row">-->
-<!--                                                                <div class="modal-ip">-->
-<!--                                                                    <h5>Reverse DNS</h5>-->
+                                                                </div>
+                                                                </div>
+                                                                <div class="ip-row">
+                                                                <div class="modal-ip">
+                                                                    <h5>Reverse DNS</h5>
 
-<!--                                                                    <p>{{ip.reverse}}</p>-->
-<!--                                                                </div>-->
+                                                                    <p>{{ip.reverse}}</p>
+                                                                </div>
 
 
-<!--                                                            </div>-->
-<!--                                                            </div>-->
-<!--                                                            <div class="modal-footer">-->
-<!--                                                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
-<!--                                                            </div>-->
-<!--                                                          </div>-->
+                                                            </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                          </div>
 
-<!--                                                        </div>-->
-<!--                                                    </div>-->
-<!--                                                -->
-<!--                                                    -->
-<!--                                                &lt;!&ndash; EndModal &ndash;&gt; -->
+                                                        </div>
+                                                    </div>
+
+
+                                                <!-- EndModal -->
                                                             {% endfor %}
                                                             {% endif %}
                                                             

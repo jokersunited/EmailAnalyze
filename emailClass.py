@@ -378,18 +378,16 @@ class EmailParser:
         # if type(self.body.get_payload()) == list:
         #     raw_urls = re.findall(url_regex, str(self.body.get_payload()[-1]))
         # else:
-        raw_urls = re.findall(url_regex, self.body.get_body(preferencelist=('html', 'plain')).get_payload())
+        print(self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", "").replace("\n", "").replace("\t", ""))
+        raw_urls = re.findall(url_regex, self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", ""))
             
-        urls = [(x[0]+x[1]).replace("\"", "").replace("=", "").replace(">", "").replace("\n", "").split(" ")[0] for x in raw_urls]
+        urls = [(x[0]+x[1]).replace("\"", "").replace(">", "").replace("\n", "").split(" ")[0] for x in raw_urls]
         print("IM HERW!")
         print(urls)
         self.urls = urls
     #Check the percentage of homoglyphs for the text body
     def homo_check(self):
-        if type(self.body.get_payload()) == list:
-            self.homo = check_homo_percentage(str(self.body.get_payload()[0]))
-        else:
-            self.homo = check_homo_percentage(str(self.body.get_payload()))
+        self.homo = check_homo_percentage(self.body.get_body(preferencelist=('html', 'plain')).get_payload())
         self.checks['Body Content'].append(["HOMOGLYPH PERCENTAGE","", str("{:.2f}".format(self.homo*100))+"%"])
 
     #Check for IP addresses in URLs, seperate domains from subdomains and group URLs from similar domains together, get HTTPS cert info
