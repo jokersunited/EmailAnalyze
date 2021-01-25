@@ -378,8 +378,9 @@ class EmailParser:
         # if type(self.body.get_payload()) == list:
         #     raw_urls = re.findall(url_regex, str(self.body.get_payload()[-1]))
         # else:
-        print(self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", "").replace("\n", "").replace("\t", ""))
-        raw_urls = re.findall(url_regex, self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", ""))
+        processed_body = self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", "").replace("\r\n", "")
+        print(processed_body)
+        raw_urls = re.findall(url_regex, processed_body)
             
         urls = [(x[0]+x[1]).replace("\"", "").replace(">", "").replace("\n", "").split(" ")[0] for x in raw_urls]
         print("IM HERW!")
