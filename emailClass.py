@@ -164,7 +164,14 @@ class EmailParser:
 
 
         #Get email date
-        raw_date = self.body["date"]
+        raw_date = self.body['date']
+        if raw_date == "":
+            for header, value in self.headers.items():
+                if header == "Received":
+                    date_re = r'[a-zA-Z]{3}, [0-9]{1,2} [a-zA-Z]{3} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}'
+                    raw_date = re.findall(date_re, value)[0]
+                    print(raw_date)
+                    break
         self.date = email.utils.parsedate_to_datetime(raw_date)
 
         #Parse header to get IP relays
@@ -191,39 +198,15 @@ class EmailParser:
     def get_text(self, text_type=None):
         if text_type == "URL":
             try:
-                return self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", "").replace(
+                return self.body.get_body(preferencelist=('html', 'plain')).get_payload(decode=True).decode('utf-8', 'ignore').replace("=", "").replace(
                     "\r\n", "")
             except:
-                return self.body.get_payload()
+                return self.body.get_payload(decode=True).decode('utf-8','ignore').replace("=", "").replace("\r\n", "")
         else:
             try:
-                return self.body.get_body(preferencelist=('html', 'plain')).get_payload().replace("=", "").replace("\r\n", " ")
+                return self.body.get_body(preferencelist=('plain', 'html')).get_payload(decode=True).decode('utf-8', 'ignore').replace("=", "").replace("\r\n", " ")
             except:
-                return self.body.get_payload()
-        # return
-        # if self.body.is_multipart():
-        #     full_body = ""
-        #     for part in self.body.get_payload():
-        #         if "multipart" in part.get_content_type():
-        #             print((part.get_payload()))
-        #             try:
-        #                 decoded = base64.b64decode(part.get_payload()).decode()
-        #             except:
-        #                 decoded = part.get_payload()
-        #             full_body += decoded
-        #         elif "text" in part.get_content_type():
-        #             try:
-        #                 decoded = base64.b64decode(part.get_payload()).decode()
-        #             except:
-        #                 decoded = part.get_payload()
-        #             full_body += decoded
-        # else:
-        #     try:
-        #         full_body = base64.b64decode(self.body.get_payload()).decode()
-        #     except:
-        #         full_body = self.body.get_payload()
-        #
-        # return full_body
+                return self.body.get_payload(decode=True).decode('utf-8', 'ignore').replace("=", "").replace("\r\n", " ")
 
     #Create a string to display the checks for IP address links
     def ip_link_check(self):
@@ -308,7 +291,6 @@ class EmailParser:
         for header, value in self.headers.items():
             if header == "Received":
                 ip_addr = re_extractor(value.split("by")[0], "ip")
-                print(ip_addr)
                 if ip_addr == "":
                     ip_obj = None
                     continue
@@ -321,7 +303,6 @@ class EmailParser:
                 for item in split_spf:
                     if "client-ip" in item:
                         ip_addr = replace_chars(item.split("=")[1])
-                        print(ip_addr)
                         if ip_addr == "":
                             ip_obj = None
                         else:
@@ -394,6 +375,7 @@ class EmailParser:
     #Check the percentage of homoglyphs for the text body
     def homo_check(self):
         # print(self.body.get_body(preferencelist=('html', 'plain')))
+        # print(self.get_text())
         self.homo = check_homo_percentage(self.get_text())
         self.checks['Body Content'].append(["HOMOGLYPH PERCENTAGE","", str("{:.2f}".format(self.homo*100))+"%"])
 
@@ -462,6 +444,12 @@ class EmailParser:
         #         full_body = base64.b64decode(self.body.get_payload()).decode()
         #     except:
         #         full_body = self.body.get_payload()
+
+        # print(full_body)
+        # try:
+        #     full_body = base64.b64decode(full_body).decode()
+        # except:
+        #     full_body = full_body
         body_text = re.sub(html_re, ' ', full_body)
         body_text = re.sub(cleaner_re, ' ', body_text)
         
@@ -475,7 +463,10 @@ class EmailParser:
             else:
 
                 each_word = re.sub(cleaner_re, '', each_word)
-                clean_word = (homoglyphs.to_ascii(each_word))
+                try:
+                    clean_word = (homoglyphs.to_ascii(each_word))
+                except:
+                    clean_word = each_word
                 word_list.extend(clean_word)
         print(word_list)
         return word_list

@@ -36,17 +36,17 @@ def check_files(filename):
 @webapp.route('/upload', methods=["GET", "POST"])
 def upload_page():
     global loading_status
+    session['error_list'] = []
 
     if request.method == "POST":
         file = request.files['emailfile']
-        file_check = check_files(file.filename)
+        file_check = check_files(file.filename.lower())
         if file_check == 1:
             session['email_list'] = []
-            loading_status = file.filename
-            if file.filename.split(".")[-1] == allowed_files[2]:
-                msg_file = extract_msg.Message(file)
+            if file.filename.split(".")[-1].lower() == allowed_files[2]:
+                msg_file = extract_msg.Message(file, overrideEncoding='utf-8')
                 raw_file = msg_file.header.as_string() + msg_file.body
-            elif file.filename.split(".")[-1] in allowed_files:
+            elif file.filename.split(".")[-1].lower() in allowed_files:
                 raw_file = file.read().decode("utf-8")
             else:
                 return render_template("/upload.html", err="File upload failed!")
@@ -59,17 +59,24 @@ def upload_page():
             for file in files:
                 loading_status = file
                 try:
-                    if file.split(".")[-1] == allowed_files[2]:
-                        msg_file = extract_msg.Message(zip_file.open(file))
+                    if file.split(".")[-1].lower() == allowed_files[2]:
+                        msg_file = extract_msg.Message(zip_file.open(file), overrideEncoding='utf-8')
                         raw_file = msg_file.header.as_string() + msg_file.body
-                    elif file.split(".")[-1] in allowed_files:
+                    elif file.split(".")[-1].lower() in allowed_files:
                         raw_file = zip_file.open(file).read().decode("utf-8")
                     else:
                         return render_template("/upload.html", err="File upload failed!")
+
                 except Exception as e:
                     print(e)
-                    return render_template("/upload.html", err="File upload failed!")
-                session['email_list'].append(EmailParser(raw_file))
+                    session['error_list'].append(file)
+                    print(session['error_list'])
+                try:
+                    session['email_list'].append(EmailParser(raw_file))
+                except Exception as e:
+                    print(e)
+                    session['error_list'].append(file)
+                    print(session['error_list'])
             return redirect("/")
         else:
             return render_template("/upload.html", err="File upload failed!")
@@ -94,7 +101,7 @@ def main_page():
         tag_dict = {tag: tag_list.count(tag) for tag in tag_list}
         tag_values = sorted(tag_dict.items(), key=lambda pair: ordered_list.index(pair[0]))
 
-        return render_template("index.html", tag_dict=tag_values, total_emails=len(session['email_list']), date_graph=Markup(get_date_plot(session['email_list'])), type_pie=Markup(get_dist(session['email_list'])))
+        return render_template("index.html", tag_dict=tag_values, total_errors=session['error_list'], total_emails=len(session['email_list']), date_graph=Markup(get_date_plot(session['email_list'])), type_pie=Markup(get_dist(session['email_list'])))
 
 #Email list page
 @webapp.route('/email', methods=["GET"])

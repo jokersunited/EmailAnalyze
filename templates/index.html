@@ -47,8 +47,9 @@
                             <!--/#btn-controls-->
                             <div class="module">
                                 <div class="module-head">
-                                    <h3>Email Statistics</h3>
+                                    <h3>Email Statistics ({{total_emails}} of {{total_emails + (total_errors|length)}} emails processed!)</h3>
                                 </div>
+                                {{total_errors}}
                                 <div class="btn-controls">
                                 <div class="btn-box-row row-fluid">
                                     <div class="phish-score btn-box big span12">
