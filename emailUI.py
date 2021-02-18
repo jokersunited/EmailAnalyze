@@ -43,20 +43,28 @@ def upload_page():
         file_check = check_files(file.filename.lower())
         if file_check == 1:
             session['email_list'] = []
-            if file.filename.split(".")[-1].lower() == allowed_files[2]:
-                msg_file = extract_msg.Message(file, overrideEncoding='utf-8')
-                raw_file = msg_file.header.as_string() + msg_file.body
-            elif file.filename.split(".")[-1].lower() in allowed_files:
-                raw_file = file.read().decode("utf-8")
-            else:
-                return render_template("/upload.html", err="File upload failed!")
-            session['email_list'].append(EmailParser(raw_file))
+            try:
+                if file.filename.split(".")[-1].lower() == allowed_files[2]:
+                    msg_file = extract_msg.Message(file, overrideEncoding='utf-8')
+                    raw_file = msg_file.header.as_string() + msg_file.body
+                elif file.filename.split(".")[-1].lower() in allowed_files:
+                    raw_file = file.read().decode("utf-8")
+                else:
+                    session['error_list'].append(file.filename)
+                session['email_list'].append(EmailParser(raw_file))
+            except:
+                return render_template("/upload.html", err="Unknown file received, upload failed!")
+
             return redirect("/")
         elif file_check == 2:
             session['email_list'] = []
-            zip_file = zipfile.ZipFile(file)
+            try:
+                zip_file = zipfile.ZipFile(file)
+            except:
+                return render_template("/upload.html", err="Unknown file received, upload failed!")
             files = zip_file.namelist()
             for file in files:
+                print(file)
                 loading_status = file
                 try:
                     if file.split(".")[-1].lower() == allowed_files[2]:
@@ -65,21 +73,18 @@ def upload_page():
                     elif file.split(".")[-1].lower() in allowed_files:
                         raw_file = zip_file.open(file).read().decode("utf-8")
                     else:
-                        return render_template("/upload.html", err="File upload failed!")
+                        session['error_list'].append(file)
 
                 except Exception as e:
-                    print(e)
                     session['error_list'].append(file)
-                    print(session['error_list'])
+                    continue
                 try:
                     session['email_list'].append(EmailParser(raw_file))
                 except Exception as e:
-                    print(e)
                     session['error_list'].append(file)
-                    print(session['error_list'])
             return redirect("/")
         else:
-            return render_template("/upload.html", err="File upload failed!")
+            return render_template("/upload.html", err="Unknown file received, upload failed!")
     else:
         return render_template("upload.html")
 

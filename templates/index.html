@@ -8,6 +8,7 @@
         <link type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
         <link type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
         <link type="text/css" href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+        <link type="text/css" href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
         <link type="text/css" href="{{ url_for('static', filename='images/icons/css/font-awesome.css') }}" rel="stylesheet">
         <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
             rel='stylesheet'>
@@ -42,14 +43,55 @@
                         <!--/.sidebar-->
                     </div>
                     <!--/.span3-->
+
+                    <!-- Modal -->
+                                                          <div class="modal fade" id="invalidModal" role="dialog">
+                                                            <div class="modal-dialog">
+
+                                                              <!-- Modal content-->
+                                                              <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                    <h4 class="modal-title">Invalid files</h4>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="ip-row">
+                                                                    <div class="modal-ip">
+                                                                        <h5>Filename</h5>
+                                                                        <ul>
+                                                                        {% for error in total_errors %}
+                                                                        <li>{{error}}</li>
+                                                                        {% endfor %}
+                                                                        </ul>
+
+                                                                    </div>
+                                                                        <div class="model-ip" style="margin-top: 20px">
+                                                                            <p>Please check these files if they are in the correct format or if they follow the appropriate email header structure.</p>
+                                                                        </div>
+                                                                    </div>
+                                                                <div class="modal-footer">
+                                                                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                                </div>
+                                                              </div>
+
+                                                            </div>
+                                                          </div>
+                                                          </div>
+                                                    <!-- EndModal -->
+
                     <div class="span9">
                         <div class="content">
                             <!--/#btn-controls-->
+                            <div class="module errors" style="text-align: center">
+                                <span><b>{{total_emails}} of {{total_emails + (total_errors|length)}}</b> emails processed!</span>
+                                {% if total_errors|length != 0 %}
+                                <a data-toggle="modal" href="#invalidModal">details</a>
+                                {% endif %}
+                            </div>
                             <div class="module">
                                 <div class="module-head">
-                                    <h3>Email Statistics ({{total_emails}} of {{total_emails + (total_errors|length)}} emails processed!)</h3>
+                                    <h3>Email Statistics</h3>
                                 </div>
-                                {{total_errors}}
                                 <div class="btn-controls">
                                 <div class="btn-box-row row-fluid">
                                     <div class="phish-score btn-box big span12">
